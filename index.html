@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Training Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0F172A;
+  --card: #192134;
+  --card-2: #1E293B;
+  --border: rgba(255,255,255,0.08);
+  --fg: #F8FAFC;
+  --muted: #94A3B8;
+  --accent: #F97316;
+  --run: #EA580C;
+  --lift: #16A34A;
+  --blue: #3B82F6;
+  --hr: #E66767;
+  --amber: #C98500;
+  --z1: #3B82F6; --z2: #16A34A; --z3: #C98500; --z4: #EA580C; --z5: #E66767;
+  --radius: 14px;
+  --gap: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { color-scheme: dark; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Barlow', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100dvh;
+  padding-bottom: 48px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 var(--gap); }
+h1, h2, .stat-value, .pr-value, .chip, .delta {
+  font-family: 'Barlow Condensed', 'Barlow', sans-serif;
+}
+header { padding: 24px 0 8px; }
+h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1; }
+h1 .accent { color: var(--accent); }
+.synced { color: var(--muted); font-size: 14px; margin-top: 2px; }
+h2 {
+  font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+  margin: 32px 0 12px; display: flex; align-items: center; gap: 8px;
+}
+h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+.chips { display: flex; gap: 8px; margin: 16px 0 4px; flex-wrap: wrap; }
+.chip {
+  background: var(--card); color: var(--muted); border: 1px solid var(--border);
+  border-radius: 999px; padding: 9px 18px; font-size: 16px; font-weight: 600;
+  letter-spacing: 0.5px; cursor: pointer; min-height: 44px; min-width: 56px;
+  transition: color .2s, background .2s, border-color .2s;
+  touch-action: manipulation;
+}
+.chip[aria-pressed="true"] { background: var(--accent); color: #0F172A; border-color: var(--accent); }
+.chip:focus-visible, .toggle:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.grid { display: grid; gap: var(--gap); }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-4 { grid-template-columns: 1fr 1fr; }
+@media (min-width: 768px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+}
+.stat-label { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value {
+  font-size: 44px; font-weight: 700; line-height: 1.05; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.stat-value .unit { font-size: 20px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+.stat-sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+.pr-row { display: grid; gap: var(--gap); grid-template-columns: 1fr 1fr; }
+@media (min-width: 768px) { .pr-row { grid-template-columns: repeat(4, 1fr); } }
+.pr-card { position: relative; overflow: hidden; }
+.pr-card::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent);
+}
+.pr-title { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.pr-title svg { width: 15px; height: 15px; color: var(--amber); }
+.pr-value { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.pr-sub { color: var(--muted); font-size: 13px; }
+.progressbar { background: var(--card-2); border-radius: 999px; height: 10px; margin-top: 10px; overflow: hidden; }
+.progressbar > div { height: 100%; background: var(--accent); border-radius: 999px; }
+
+.vs-card .delta { font-size: 18px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; }
+.vs-card .delta svg { width: 14px; height: 14px; }
+.delta.up { color: #4ADE80; }
+.delta.down { color: var(--hr); }
+.delta.flat { color: var(--muted); }
+
+.chart-card { padding: 18px 12px 10px 6px; }
+.chart-card .chart-title { padding-left: 12px; margin-bottom: 8px; color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.chart-wrap { position: relative; height: 240px; }
+.zone-legend { display: flex; gap: 12px; flex-wrap: wrap; padding: 8px 0 4px 12px; font-size: 13px; color: var(--muted); }
+.zone-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.zone-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+.ex-grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+@media (min-width: 640px) { .ex-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .ex-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.ex-card { padding: 14px; }
+.ex-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ex-name { font-weight: 600; font-size: 16px; }
+.ex-day { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ex-chart { position: relative; height: 110px; margin-top: 8px; }
+.ex-last { color: var(--muted); font-size: 13px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.badge-pr {
+  background: rgba(249,115,22,0.15); color: var(--accent); border: 1px solid rgba(249,115,22,0.4);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px; padding: 2px 8px; border-radius: 999px;
+}
+
+.feed { display: flex; flex-direction: column; gap: 10px; }
+.feed-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.feed-icon {
+  width: 40px; height: 40px; border-radius: 12px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.feed-icon svg { width: 22px; height: 22px; }
+.feed-icon.run  { background: rgba(234,88,12,0.16); color: var(--run); }
+.feed-icon.lift { background: rgba(22,163,74,0.16); color: #4ADE80; }
+.feed-icon.other{ background: rgba(59,130,246,0.16); color: var(--blue); }
+.feed-main { flex: 1; min-width: 0; }
+.feed-title { font-weight: 600; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.feed-sub { color: var(--muted); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.feed-date { color: var(--muted); font-size: 13px; flex: none; text-align: right; font-variant-numeric: tabular-nums; }
+
+.toggle {
+  background: var(--card); color: var(--muted); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 500; cursor: pointer;
+  min-height: 44px; font-family: inherit;
+}
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 12px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+th { color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 12px; letter-spacing: 0.8px; }
+.hidden { display: none; }
+.loading { color: var(--muted); padding: 60px 0; text-align: center; font-size: 16px; }
+footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: center; }
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Gabriel's <span class="accent">Training</span></h1>
+    <p class="synced" id="synced">Loading…</p>
+  </header>
+
+  <div id="loading" class="loading">Loading workout data…</div>
+
+  <main id="app" class="hidden">
+    <div class="chips" role="group" aria-label="Time range">
+      <button class="chip" data-range="30" aria-pressed="true">30D</button>
+      <button class="chip" data-range="90" aria-pressed="false">90D</button>
+      <button class="chip" data-range="365" aria-pressed="false">1Y</button>
+      <button class="chip" data-range="0" aria-pressed="false">ALL</button>
+    </div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Now</h2>
+    <div class="grid grid-4" id="hero"></div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Records &amp; Milestones</h2>
+    <div class="pr-row" id="prs"></div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="vs-title">This Month vs Last</span></h2>
+    <div class="grid grid-4" id="vs"></div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Heart Rate</h2>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="card chart-card">
+        <div class="chart-title">Avg heart rate per run (bpm)</div>
+        <div class="chart-wrap"><canvas id="hrChart" role="img" aria-label="Line chart of average heart rate per run over time"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="chart-title">Weekly time in HR zones (minutes)</div>
+        <div class="chart-wrap"><canvas id="zoneChart" role="img" aria-label="Stacked bar chart of weekly minutes spent in each heart-rate zone"></canvas></div>
+        <div class="zone-legend" id="zoneLegend"></div>
+      </div>
+    </div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-2 2 4 4-9 9-4 1 1-4 9-9 4 4 2-2-5-5Z" transform="rotate(90 12 12)"/><circle cx="17" cy="5" r="1.5"/><path d="M4 17l5 5"/><path d="M15 8.5 8.5 15"/></svg>Running</h2>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="card chart-card">
+        <div class="chart-title">Pace per run (min/km — lower is faster)</div>
+        <div class="chart-wrap"><canvas id="paceChart" role="img" aria-label="Line chart of running pace per run over time"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="chart-title">Weekly distance (km)</div>
+        <div class="chart-wrap"><canvas id="kmChart" role="img" aria-label="Bar chart of weekly running distance"></canvas></div>
+      </div>
+    </div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>Strength Progress</h2>
+    <p class="stat-sub" style="margin: -6px 0 12px;">Working weight per session, every exercise. All weights in kg.</p>
+    <div class="ex-grid" id="exGrid"></div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Recent Workouts</h2>
+    <div class="feed" id="feed"></div>
+
+    <div style="margin-top: 24px;">
+      <button class="toggle" id="tableToggle" aria-expanded="false">Show data table (accessible view)</button>
+      <div id="tableWrap" class="hidden" style="overflow-x: auto;"></div>
+    </div>
+
+    <footer>Auto-synced daily from Strava + Google Sheets · Private dashboard</footer>
+  </main>
+</div>
+
+<script>
+(async function () {
+  const $ = (s) => document.querySelector(s);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const C = {
+    run: css('--run'), lift: css('--lift'), blue: css('--blue'), hr: css('--hr'),
+    amber: css('--amber'), muted: css('--muted'), border: css('--border'),
+    zones: [css('--z1'), css('--z2'), css('--z3'), css('--z4'), css('--z5')],
+  };
+
+  let data;
+  try {
+    const r = await fetch('./data.json', { cache: 'no-store' });
+    data = await r.json();
+  } catch (e) {
+    $('#loading').textContent = 'Could not load workout data.';
+    return;
+  }
+  const all = data.workouts;
+  const runs = all.filter(w => w.type === 'cardio' && w.strava_type === 'Run' && w.distance_m > 400);
+  const lifts = all.filter(w => w.type === 'lift');
+  const liftHrOnly = all.filter(w => w.type === 'lift_hr_only');
+
+  // ---------- helpers ----------
+  const day = 86400000;
+  const parse = (s) => new Date(s + 'T12:00:00');
+  const fmtDate = (s) => parse(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const fmtDateY = (s) => parse(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+  const pad = (n) => String(n).padStart(2, '0');
+  const fmtDur = (s) => { s = Math.round(s); const h = Math.floor(s/3600), m = Math.floor(s%3600/60); return h ? `${h}h ${pad(m)}m` : `${m}:${pad(s%60)}`; };
+  const fmtTime = (s) => { s = Math.round(s); const h = Math.floor(s/3600), m = Math.floor(s%3600/60), ss = s%60; return h ? `${h}:${pad(m)}:${pad(ss)}` : `${m}:${pad(ss)}`; };
+  const paceOf = (w) => (w.duration_s / 60) / (w.distance_m / 1000); // min per km
+  const fmtPace = (p) => { const m = Math.floor(p), s = Math.round((p - m) * 60); return `${m}:${pad(s)}`; };
+  const weekKey = (dstr) => { const d = parse(dstr); const t = new Date(d); t.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return t.toISOString().slice(0, 10); };
+  const monthKey = (dstr) => dstr.slice(0, 7);
+  const liftVolume = (l) => l.exercises.reduce((s, e) => s + e.weight_kg * e.reps.reduce((a, b) => a + b, 0), 0);
+  const today = new Date();
+
+  // ---------- range filter ----------
+  let rangeDays = 30;
+  const inRange = (w) => rangeDays === 0 || (today - parse(w.date)) <= rangeDays * day;
+
+  // ---------- Chart.js defaults ----------
+  Chart.defaults.color = C.muted;
+  Chart.defaults.font.family = "'Barlow', system-ui, sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.animation = reduced ? false : { duration: 400 };
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.plugins.legend.display = false;
+  Chart.defaults.plugins.tooltip.backgroundColor = '#1E293B';
+  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.12)';
+  Chart.defaults.plugins.tooltip.borderWidth = 1;
+  Chart.defaults.plugins.tooltip.titleColor = '#F8FAFC';
+  Chart.defaults.plugins.tooltip.bodyColor = '#F8FAFC';
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.displayColors = false;
+
+  // ---------- hero stats ----------
+  function weeklyStreak() {
+    const weeks = new Set(all.map(w => weekKey(w.date)));
+    let streak = 0;
+    let cur = weekKey(today.toISOString().slice(0, 10));
+    // current week counts if it has a workout; otherwise start from last week
+    if (!weeks.has(cur)) cur = new Date(parse(cur) - 7 * day).toISOString().slice(0, 10);
+    while (weeks.has(cur)) { streak++; cur = new Date(parse(cur) - 7 * day).toISOString().slice(0, 10); }
+    return streak;
+  }
+  const totalKm = runs.reduce((s, r) => s + r.distance_m, 0) / 1000;
+  const thisMonth = all.filter(w => monthKey(w.date) === monthKey(today.toISOString().slice(0, 10)));
+  function heroHTML() {
+    const tiles = [
+      { label: 'Weekly streak', v: weeklyStreak(), unit: 'wks', sub: 'consecutive active weeks' },
+      { label: 'This month', v: thisMonth.length, unit: '', sub: 'workouts logged' },
+      { label: 'Total distance', v: totalKm.toFixed(0), unit: 'km', sub: 'lifetime running' },
+      { label: 'Total workouts', v: all.length, unit: '', sub: 'runs, lifts & more' },
+    ];
+    $('#hero').innerHTML = tiles.map(t => `
+      <div class="card">
+        <div class="stat-label">${t.label}</div>
+        <div class="stat-value">${t.v}<span class="unit">${t.unit}</span></div>
+        <div class="stat-sub">${t.sub}</div>
+      </div>`).join('');
+  }
+
+  // ---------- PRs & milestones ----------
+  function bestEffort(minKm) {
+    const c = runs.filter(r => r.distance_m >= minKm * 1000 && r.duration_s > 0);
+    if (!c.length) return null;
+    const best = c.reduce((a, b) => paceOf(a) < paceOf(b) ? a : b);
+    return { time: paceOf(best) * minKm * 60, pace: paceOf(best), date: best.date };
+  }
+  function prHTML() {
+    const trophy = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+    const p5 = bestEffort(5), p10 = bestEffort(10), pHM = bestEffort(21.0975);
+    const longest = runs.reduce((a, b) => a.distance_m > b.distance_m ? a : b);
+    const weekTotals = {};
+    runs.forEach(r => { const k = weekKey(r.date); weekTotals[k] = (weekTotals[k] || 0) + r.distance_m; });
+    const bigWeek = Object.entries(weekTotals).reduce((a, b) => b[1] > a[1] ? b : a);
+    const nextMilestone = Math.ceil(totalKm / 250) * 250;
+    const cards = [
+      p5 && { t: '5K best', v: fmtTime(p5.time), sub: `${fmtPace(p5.pace)}/km · ${fmtDateY(p5.date)}` },
+      p10 && { t: '10K best', v: fmtTime(p10.time), sub: `${fmtPace(p10.pace)}/km · ${fmtDateY(p10.date)}` },
+      pHM ? { t: 'Half marathon', v: fmtTime(pHM.time), sub: `${fmtPace(pHM.pace)}/km · ${fmtDateY(pHM.date)}` }
+          : { t: 'Half marathon', v: '—', sub: 'first 21.1 km awaits' },
+      { t: 'Longest run', v: (longest.distance_m / 1000).toFixed(1) + ' km', sub: fmtDateY(longest.date) },
+      { t: 'Biggest week', v: (bigWeek[1] / 1000).toFixed(1) + ' km', sub: 'week of ' + fmtDateY(bigWeek[0]) },
+      { t: 'Road to ' + nextMilestone + ' km', v: totalKm.toFixed(1) + ' km',
+        sub: (nextMilestone - totalKm).toFixed(0) + ' km to go',
+        bar: totalKm / nextMilestone },
+    ].filter(Boolean);
+    $('#prs').innerHTML = cards.map(c => `
+      <div class="card pr-card">
+        <div class="pr-title">${trophy}${c.t}</div>
+        <div class="pr-value">${c.v}</div>
+        <div class="pr-sub">${c.sub}</div>
+        ${c.bar ? `<div class="progressbar" role="progressbar" aria-valuenow="${Math.round(c.bar * 100)}" aria-valuemin="0" aria-valuemax="100"><div style="width:${(c.bar * 100).toFixed(1)}%"></div></div>` : ''}
+      </div>`).join('');
+  }
+
+  // ---------- month vs month ----------
+  function monthStats(key) {
+    const ws = all.filter(w => monthKey(w.date) === key);
+    const rs = ws.filter(w => w.strava_type === 'Run' && w.type === 'cardio');
+    const ls = ws.filter(w => w.type === 'lift');
+    return {
+      workouts: ws.length,
+      km: rs.reduce((s, r) => s + r.distance_m, 0) / 1000,
+      runTime: rs.reduce((s, r) => s + (r.duration_s || 0), 0),
+      liftSessions: ls.length,
+      volume: ls.reduce((s, l) => s + liftVolume(l), 0),
+    };
+  }
+  function vsHTML() {
+    const cur = monthKey(today.toISOString().slice(0, 10));
+    const prevD = new Date(today.getFullYear(), today.getMonth() - 1, 15);
+    const prev = monthKey(prevD.toISOString().slice(0, 10));
+    const a = monthStats(cur), b = monthStats(prev);
+    const monthName = today.toLocaleDateString('en-GB', { month: 'long' });
+    const prevName = prevD.toLocaleDateString('en-GB', { month: 'long' });
+    $('#vs-title').textContent = `${monthName} vs ${prevName}`;
+    const rows = [
+      { t: 'Workouts', a: a.workouts, b: b.workouts, f: (x) => x },
+      { t: 'Run distance', a: a.km, b: b.km, f: (x) => x.toFixed(1) + ' km' },
+      { t: 'Run time', a: a.runTime, b: b.runTime, f: fmtDur },
+      { t: 'Lift volume', a: a.volume, b: b.volume, f: (x) => (x / 1000).toFixed(1) + ' t' },
+    ];
+    const up = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>';
+    const dn = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+    $('#vs').innerHTML = rows.map(r => {
+      const diff = r.a - r.b;
+      const cls = Math.abs(diff) < 1e-9 ? 'flat' : diff > 0 ? 'up' : 'down';
+      const arrow = cls === 'flat' ? '' : cls === 'up' ? up : dn;
+      const pct = r.b > 0 ? Math.round(Math.abs(diff) / r.b * 100) + '%' : '—';
+      return `<div class="card vs-card">
+        <div class="stat-label">${r.t}</div>
+        <div class="stat-value" style="font-size:32px">${r.f(r.a)}</div>
+        <div class="delta ${cls}">${arrow}<span>${pct} vs ${r.f(r.b)}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  // ---------- charts (range-dependent) ----------
+  let charts = [];        // range-dependent charts (rebuilt on filter change)
+  let exCharts = [];      // per-exercise charts (built once, never rebuilt)
+  function destroyCharts() { charts.forEach(c => c.destroy()); charts = []; }
+  function baseLine(color) {
+    return {
+      borderColor: color, backgroundColor: color, borderWidth: 2,
+      pointRadius: 2.5, pointHoverRadius: 6, pointHitRadius: 14, tension: 0.3,
+    };
+  }
+
+  function buildCharts() {
+    destroyCharts();
+    const rs = runs.filter(inRange);
+    const hrRuns = rs.filter(r => r.avg_hr);
+
+    charts.push(new Chart($('#hrChart'), {
+      type: 'line',
+      data: { labels: hrRuns.map(r => fmtDate(r.date)),
+        datasets: [{ ...baseLine(C.hr), data: hrRuns.map(r => Math.round(r.avg_hr)) }] },
+      options: { maintainAspectRatio: false,
+        scales: { y: { title: { display: false }, grace: '10%' }, x: { ticks: { maxTicksLimit: 8 } } },
+        plugins: { tooltip: { callbacks: {
+          label: (c) => `${c.parsed.y} bpm avg · max ${hrRuns[c.dataIndex].max_hr || '—'}`,
+        } } } },
+    }));
+
+    // weekly zone minutes (runs + lift sessions with zones)
+    const withZones = all.filter(w => inRange(w) && w.hr_zone_seconds);
+    const zWeeks = {};
+    withZones.forEach(w => {
+      const k = weekKey(w.date);
+      zWeeks[k] = zWeeks[k] || [0, 0, 0, 0, 0];
+      w.hr_zone_seconds.forEach((s, i) => zWeeks[k][i] += s);
+    });
+    const zKeys = Object.keys(zWeeks).sort();
+    charts.push(new Chart($('#zoneChart'), {
+      type: 'bar',
+      data: { labels: zKeys.map(fmtDate),
+        datasets: C.zones.map((color, zi) => ({
+          label: 'Z' + (zi + 1), data: zKeys.map(k => Math.round(zWeeks[k][zi] / 60)),
+          backgroundColor: color, stack: 'z', borderRadius: 3,
+          borderColor: css('--card'), borderWidth: { top: 1, right: 0, bottom: 0, left: 0 },
+        })) },
+      options: { maintainAspectRatio: false,
+        scales: { x: { stacked: true, ticks: { maxTicksLimit: 8 } }, y: { stacked: true } },
+        plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y} min` } } } },
+    }));
+    const zoneBounds = data.hr_zones || [];
+    $('#zoneLegend').innerHTML = C.zones.map((color, i) => {
+      const b = zoneBounds[i];
+      const range = b ? (b[1] > 500 ? `${b[0]}+` : `${b[0]}–${b[1]}`) : '';
+      return `<span><i style="background:${color}"></i>Z${i + 1} ${range}</span>`;
+    }).join('');
+
+    charts.push(new Chart($('#paceChart'), {
+      type: 'line',
+      data: { labels: rs.map(r => fmtDate(r.date)),
+        datasets: [{ ...baseLine(C.run), data: rs.map(r => +paceOf(r).toFixed(2)) }] },
+      options: { maintainAspectRatio: false,
+        scales: { y: { reverse: true, ticks: { callback: (v) => fmtPace(v) } }, x: { ticks: { maxTicksLimit: 8 } } },
+        plugins: { tooltip: { callbacks: {
+          label: (c) => { const r = rs[c.dataIndex]; return `${fmtPace(c.parsed.y)}/km · ${(r.distance_m / 1000).toFixed(1)} km`; },
+        } } } },
+    }));
+
+    const kWeeks = {};
+    rs.forEach(r => { const k = weekKey(r.date); kWeeks[k] = (kWeeks[k] || 0) + r.distance_m; });
+    const kKeys = Object.keys(kWeeks).sort();
+    charts.push(new Chart($('#kmChart'), {
+      type: 'bar',
+      data: { labels: kKeys.map(fmtDate),
+        datasets: [{ data: kKeys.map(k => +(kWeeks[k] / 1000).toFixed(1)), backgroundColor: C.run, borderRadius: 4, maxBarThickness: 34 }] },
+      options: { maintainAspectRatio: false,
+        scales: { x: { ticks: { maxTicksLimit: 8 } } },
+        plugins: { tooltip: { callbacks: { label: (c) => c.parsed.y + ' km' } } } },
+    }));
+
+    buildFeed();
+  }
+
+  // ---------- strength small multiples (always all-time) ----------
+  function buildStrength() {
+    const byEx = {};
+    lifts.forEach(l => l.exercises.forEach(e => {
+      (byEx[e.exercise] = byEx[e.exercise] || { day: l.day, pts: [] }).pts.push({
+        date: l.date, w: e.weight_kg, reps: e.reps,
+      });
+    }));
+    const names = Object.keys(byEx).sort((a, b) => {
+      const dayOrder = { 'Upper A': 0, 'Upper B': 1, 'Leg day': 2 };
+      return (dayOrder[byEx[a].day] - dayOrder[byEx[b].day]) || a.localeCompare(b);
+    });
+    $('#exGrid').innerHTML = names.map((n, i) => {
+      const ex = byEx[n];
+      ex.pts.sort((a, b) => a.date.localeCompare(b.date));
+      const last = ex.pts[ex.pts.length - 1];
+      const max = Math.max(...ex.pts.map(p => p.w));
+      const isPR = last.w >= max && ex.pts.length > 1 && last.w > ex.pts[0].w;
+      return `<div class="card ex-card">
+        <div class="ex-head">
+          <span class="ex-name">${n} ${isPR ? '<span class="badge-pr">PR</span>' : ''}</span>
+          <span class="ex-day">${ex.day}</span>
+        </div>
+        <div class="ex-chart"><canvas id="ex${i}" role="img" aria-label="Weight progression for ${n}: currently ${last.w} kg"></canvas></div>
+        <div class="ex-last">Last: <strong>${last.w} kg</strong> × ${last.reps.join(',') || '—'} · best ${max} kg</div>
+      </div>`;
+    }).join('');
+    names.forEach((n, i) => {
+      const ex = byEx[n];
+      exCharts.push(new Chart($('#ex' + i), {
+        type: 'line',
+        data: { labels: ex.pts.map(p => fmtDate(p.date)),
+          datasets: [{ ...baseLine(C.lift), data: ex.pts.map(p => p.w), pointRadius: 3 }] },
+        options: { maintainAspectRatio: false,
+          scales: { y: { grace: '15%', ticks: { maxTicksLimit: 4, font: { size: 10 } } },
+                    x: { ticks: { maxTicksLimit: 4, font: { size: 10 } } } },
+          plugins: { tooltip: { callbacks: {
+            label: (c) => `${c.parsed.y} kg × ${ex.pts[c.dataIndex].reps.join(',') || '—'}`,
+          } } } },
+      }));
+    });
+  }
+
+  // ---------- feed ----------
+  const icons = {
+    run: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="17" cy="5" r="2"/><path d="M13.5 8.5 10 12l3 3-1 5"/><path d="m10 12-3-1.5L9.5 7l4 1.5 2.5 3H19"/><path d="m7 21 2.5-4"/></svg>',
+    lift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>',
+    other: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  };
+  function feedRow(w) {
+    if (w.type === 'lift') {
+      const vol = (liftVolume(w) / 1000).toFixed(1);
+      const hr = w.avg_hr ? ` · ${Math.round(w.avg_hr)} bpm` : '';
+      return { icon: 'lift', title: `${w.day} — ${w.exercises.length} exercises`,
+        sub: `${vol} t volume${w.duration_s ? ' · ' + fmtDur(w.duration_s) : ''}${hr}` };
+    }
+    if (w.type === 'lift_hr_only') {
+      return { icon: 'lift', title: w.name || 'Strength session',
+        sub: `${w.duration_s ? fmtDur(w.duration_s) : ''}${w.avg_hr ? ' · ' + Math.round(w.avg_hr) + ' bpm' : ''} · not in sheet` };
+    }
+    const isRun = w.strava_type === 'Run';
+    return { icon: isRun ? 'run' : 'other', title: w.name || w.strava_type,
+      sub: isRun
+        ? `${(w.distance_m / 1000).toFixed(1)} km · ${fmtPace(paceOf(w))}/km${w.avg_hr ? ' · ' + Math.round(w.avg_hr) + ' bpm' : ''}`
+        : `${w.strava_type}${w.duration_s ? ' · ' + fmtDur(w.duration_s) : ''}` };
+  }
+  function buildFeed() {
+    const items = all.filter(inRange).slice(-14).reverse();
+    $('#feed').innerHTML = items.map(w => {
+      const r = feedRow(w);
+      return `<div class="feed-item">
+        <div class="feed-icon ${r.icon}">${icons[r.icon]}</div>
+        <div class="feed-main"><div class="feed-title">${r.title}</div><div class="feed-sub">${r.sub}</div></div>
+        <div class="feed-date">${fmtDateY(w.date)}</div>
+      </div>`;
+    }).join('') || '<p class="stat-sub">No workouts in this range.</p>';
+  }
+
+  // ---------- accessible table ----------
+  function buildTable() {
+    const rows = all.slice().reverse().map(w => {
+      const r = feedRow(w);
+      return `<tr><td>${w.date}</td><td>${w.type === 'lift' || w.type === 'lift_hr_only' ? 'Lift' : w.strava_type}</td><td>${r.title}</td><td>${r.sub}</td></tr>`;
+    }).join('');
+    $('#tableWrap').innerHTML = `<table><caption class="stat-sub" style="text-align:left;padding:8px 0;">All ${all.length} workouts, newest first</caption><thead><tr><th>Date</th><th>Type</th><th>Workout</th><th>Details</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  // ---------- wire up ----------
+  $('#synced').textContent = 'Last synced ' + new Date(data.generated_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  document.querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+    ch.setAttribute('aria-pressed', 'true');
+    rangeDays = +ch.dataset.range;
+    buildCharts();
+  }));
+  $('#tableToggle').addEventListener('click', () => {
+    const w = $('#tableWrap');
+    const open = w.classList.toggle('hidden');
+    $('#tableToggle').setAttribute('aria-expanded', String(!open));
+    $('#tableToggle').textContent = open ? 'Show data table (accessible view)' : 'Hide data table';
+    if (!open && !w.innerHTML) buildTable();
+  });
+
+  $('#loading').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  heroHTML();
+  prHTML();
+  vsHTML();
+  buildStrength();
+  buildCharts();
+})();
+</script>
+</body>
+</html>
