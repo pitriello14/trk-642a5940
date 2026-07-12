@@ -46,6 +46,13 @@ header { padding: 24px 0 8px; }
 h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1; }
 h1 .accent { color: var(--accent); }
 .synced { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.tabs { display: flex; gap: 8px; margin-top: 14px; }
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 22px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 17px; font-weight: 600; letter-spacing: 0.6px;
+  text-transform: uppercase; text-decoration: none; }
+.tab.active { background: var(--accent); border-color: var(--accent); color: #0F172A; }
+.tab:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 h2 {
   font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
   margin: 32px 0 12px; display: flex; align-items: center; gap: 8px;
@@ -159,6 +166,10 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   <header>
     <h1>Gabriel's <span class="accent">Training</span></h1>
     <p class="synced" id="synced">Loading…</p>
+    <nav class="tabs" aria-label="Pages">
+      <a class="tab active" href="./index.html" aria-current="page">Dashboard</a>
+      <a class="tab" href="./projections.html">Projections</a>
+    </nav>
   </header>
 
   <div id="loading" class="loading">Loading workout data…</div>

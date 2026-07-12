@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Projections — Training Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0F172A; --card: #192134; --card-2: #1E293B;
+  --border: rgba(255,255,255,0.08);
+  --fg: #F8FAFC; --muted: #94A3B8;
+  --accent: #F97316; --run: #EA580C; --lift: #16A34A; --blue: #3B82F6; --hr: #E66767; --amber: #C98500;
+  --radius: 14px; --gap: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: 'Barlow', system-ui, sans-serif; font-size: 16px; line-height: 1.5; min-height: 100dvh; padding-bottom: 48px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 var(--gap); }
+h1, h2, .stat-value, .chip, .tab, .fc-value { font-family: 'Barlow Condensed', 'Barlow', sans-serif; }
+header { padding: 24px 0 8px; }
+h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1; }
+h1 .accent { color: var(--accent); }
+.synced { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.tabs { display: flex; gap: 8px; margin-top: 14px; }
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 22px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  font-size: 17px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; text-decoration: none; }
+.tab.active { background: var(--accent); border-color: var(--accent); color: #0F172A; }
+.tab:focus-visible, .chip:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+h2 { font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; }
+h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+.chips { display: flex; gap: 8px; margin: 18px 0 4px; }
+.chip { background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 999px;
+  padding: 9px 18px; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; min-height: 44px; min-width: 56px;
+  transition: color .2s, background .2s; touch-action: manipulation; }
+.chip[aria-pressed="true"] { background: var(--accent); color: #0F172A; border-color: var(--accent); }
+.grid { display: grid; gap: var(--gap); }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+.fc-card { position: relative; overflow: hidden; }
+.fc-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent); }
+.fc-label { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.fc-value { font-size: 40px; font-weight: 700; line-height: 1.05; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.fc-range { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.fc-now { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+.goal-line { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 14px; }
+.goal-line .ok { color: #4ADE80; font-weight: 600; }
+.goal-line .push { color: var(--amber); font-weight: 600; }
+.chart-card { padding: 18px 12px 10px 6px; }
+.chart-card .chart-title { padding-left: 12px; margin-bottom: 8px; color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.chart-wrap { position: relative; height: 250px; }
+.note { color: var(--muted); font-size: 13px; padding: 8px 12px 2px; }
+.ex-grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+@media (min-width: 640px) { .ex-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .ex-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.ex-card { padding: 14px; }
+.ex-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ex-name { font-weight: 600; font-size: 16px; }
+.ex-target { color: var(--accent); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ex-chart { position: relative; height: 120px; margin-top: 8px; }
+.ex-sub { color: var(--muted); font-size: 13px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.loading { color: var(--muted); padding: 60px 0; text-align: center; }
+.hidden { display: none; }
+footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Gabriel's <span class="accent">Training</span></h1>
+    <p class="synced" id="synced">Loading…</p>
+    <nav class="tabs" aria-label="Pages">
+      <a class="tab" href="./index.html">Dashboard</a>
+      <a class="tab active" href="./projections.html" aria-current="page">Projections</a>
+    </nav>
+  </header>
+
+  <div id="loading" class="loading">Crunching the numbers…</div>
+
+  <main id="app" class="hidden">
+    <div class="chips" role="group" aria-label="Projection horizon">
+      <button class="chip" data-months="3" aria-pressed="true">3M</button>
+      <button class="chip" data-months="6" aria-pressed="false">6M</button>
+      <button class="chip" data-months="12" aria-pressed="false">12M</button>
+    </div>
+    <p class="note" style="padding-left:0">Projections extrapolate your recent training. Solid = history, dashed = projected, shaded = optimistic→conservative range. Not a promise — a trajectory.</p>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span id="raceTitle">Race Predictions</span></h2>
+    <div class="grid grid-3" id="raceCards"></div>
+    <div class="card chart-card" style="margin-top: var(--gap);">
+      <div class="chart-title">Estimated 5K time — history &amp; projection (mm:ss)</div>
+      <div class="chart-wrap"><canvas id="raceChart" role="img" aria-label="5K time history with dashed projection band"></canvas></div>
+      <div class="note" id="raceNote"></div>
+    </div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="m17 7-5-5-5 5"/><path d="M5 22h14"/></svg>Distance Milestones</h2>
+    <div class="grid grid-3" id="kmCards"></div>
+    <div class="card chart-card" style="margin-top: var(--gap);">
+      <div class="chart-title">Cumulative distance (km) — toward the next milestones</div>
+      <div class="chart-wrap"><canvas id="kmChart" role="img" aria-label="Cumulative running distance with projection to future milestones"></canvas></div>
+    </div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Aerobic Fitness</h2>
+    <div class="card chart-card">
+      <div class="chart-title">Running economy — metres per heartbeat (higher is fitter)</div>
+      <div class="chart-wrap"><canvas id="fitChart" role="img" aria-label="Running economy trend with projection"></canvas></div>
+      <div class="note">Speed ÷ heart rate per run. Rising = covering more ground per beat = your engine improving.</div>
+    </div>
+
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>Big Lifts — Projected</h2>
+    <p class="note" style="padding-left:0">Simulated with your own rule: build first set to 8 reps, then add the exercise's increment and rebuild from 6. Assumes your current training frequency.</p>
+    <div class="ex-grid" id="liftGrid"></div>
+
+    <footer>Projections recompute automatically as new workouts sync in.</footer>
+  </main>
+</div>
+
+<script>
+(async function () {
+  const $ = (s) => document.querySelector(s);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const C = { run: css('--run'), lift: css('--lift'), blue: css('--blue'), hr: css('--hr'), amber: css('--amber'), muted: css('--muted') };
+  const bandColor = 'rgba(234,88,12,0.14)';
+  const bandColorG = 'rgba(22,163,74,0.16)';
+  const bandColorB = 'rgba(59,130,246,0.14)';
+
+  let data;
+  try { data = await (await fetch('./data.json', { cache: 'no-store' })).json(); }
+  catch (e) { $('#loading').textContent = 'Could not load workout data.'; return; }
+  const all = data.workouts;
+  const runs = all.filter(w => w.type === 'cardio' && w.strava_type === 'Run' && w.distance_m > 400 && w.duration_s > 0);
+  const lifts = all.filter(w => w.type === 'lift');
+
+  const week = 7 * 86400000;
+  const parse = (s) => new Date(s + 'T12:00:00');
+  const today = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const fmtTime = (s) => { s = Math.max(0, Math.round(s)); const h = Math.floor(s/3600), m = Math.floor(s%3600/60), ss = s%60; return h ? `${h}:${pad(m)}:${pad(ss)}` : `${m}:${pad(ss)}`; };
+  const paceOf = (w) => (w.duration_s / 60) / (w.distance_m / 1000);
+  const weeksAgo = (dstr) => (today - parse(dstr)) / week;
+  const labelFor = (weeksFromNow) => new Date(today.getTime() + weeksFromNow * week).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+  Chart.defaults.color = C.muted;
+  Chart.defaults.font.family = "'Barlow', system-ui, sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.animation = reduced ? false : { duration: 400 };
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.plugins.legend.display = false;
+  Chart.defaults.plugins.tooltip.backgroundColor = '#1E293B';
+  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.12)';
+  Chart.defaults.plugins.tooltip.borderWidth = 1;
+  Chart.defaults.plugins.tooltip.titleColor = '#F8FAFC';
+  Chart.defaults.plugins.tooltip.bodyColor = '#F8FAFC';
+  Chart.defaults.plugins.tooltip.displayColors = false;
+
+  // ---------- recency-weighted linear regression over (weeks-from-now → value) ----------
+  function regress(points) {
+    const n = points.length;
+    if (n < 3) return null;
+    let sw = 0, sx = 0, sy = 0, sxx = 0, sxy = 0;
+    points.forEach(p => {
+      const w = 1 / (1 + Math.abs(p.x) / 12);
+      sw += w; sx += w * p.x; sy += w * p.y; sxx += w * p.x * p.x; sxy += w * p.x * p.y;
+    });
+    const denom = sw * sxx - sx * sx;
+    if (Math.abs(denom) < 1e-9) return null;
+    const slope = (sw * sxy - sx * sy) / denom;
+    const intercept = (sy - slope * sx) / sw;
+    return { slope, intercept };
+  }
+
+  // ---------- 5K estimated time series ----------
+  // Easy/recovery jogs make a run's raw pace a bad proxy for fitness, so first
+  // narrow to "effort" runs (faster half of recent pace distribution ≥3km),
+  // then take the bi-weekly best among those for the trend line.
+  const RIEGEL = 1.06;
+  const est5kOf = (r) => r.duration_s * Math.pow(5000 / r.distance_m, RIEGEL);
+  const candidateRuns = runs.filter(r => weeksAgo(r.date) <= 26 && r.distance_m >= 3000);
+  const sortedPace = candidateRuns.map(paceOf).sort((a, b) => a - b);
+  const paceCutoff = sortedPace.length ? sortedPace[Math.floor(sortedPace.length * 0.5)] : Infinity;
+  const effortRuns = candidateRuns.filter(r => paceOf(r) <= paceCutoff);
+  const biweekly5k = {};
+  effortRuns.forEach(r => {
+    const bw = Math.floor(weeksAgo(r.date) / 2);
+    const t = est5kOf(r);
+    if (!(bw in biweekly5k) || t < biweekly5k[bw]) biweekly5k[bw] = t;
+  });
+  const series5k = Object.entries(biweekly5k).map(([bw, t]) => ({ x: -bw * 2, y: t })).sort((a, b) => a.x - b.x);
+  const fit5k = regress(series5k);
+  const ownBest5k = candidateRuns.length ? Math.min(...candidateRuns.map(est5kOf)) : null;
+  const now5k = Math.min(
+    fit5k ? fit5k.intercept : Infinity,
+    ownBest5k !== null ? ownBest5k * 1.03 : Infinity, // "now" can't be worse than ~best effort
+  ) || (ownBest5k ?? 1500);
+
+  function project(fit, nowVal, weeksAhead, lowerIsBetter) {
+    if (!fit) return { mid: nowVal, opt: nowVal, con: nowVal };
+    const dir = lowerIsBetter ? Math.min(fit.slope, 0) : Math.max(fit.slope, 0);
+    return { mid: nowVal + dir * 0.75 * weeksAhead, opt: nowVal + dir * weeksAhead, con: nowVal + dir * 0.4 * weeksAhead };
+  }
+
+  let months = 3;
+  const goalDate = () => new Date(today.getFullYear(), today.getMonth() + months, today.getDate());
+  const horizonWeeks = () => months * 4.345;
+
+  // ---------- race predictions ----------
+  const bestActual = (minKm) => {
+    const c = runs.filter(r => r.distance_m >= minKm * 1000);
+    return c.length ? Math.min(...c.map(r => paceOf(r) * minKm * 60)) : null;
+  };
+  const riegelFrom5k = (t5, km) => t5 * Math.pow(km / 5, RIEGEL);
+  const GOALS = [null, { t: 45 * 60, name: 'Sub-45' }, { t: 100 * 60, name: 'Sub-1:40' }];
+
+  function raceCards() {
+    const wA = horizonWeeks();
+    const p5 = project(fit5k, now5k, wA, true);
+    const defs = [ { label: '5K', km: 5 }, { label: '10K', km: 10 }, { label: 'Half marathon', km: 21.0975 } ];
+    $('#raceTitle').textContent = `Race Predictions — ${goalDate().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}`;
+    $('#raceCards').innerHTML = defs.map((d, di) => {
+      const own = bestActual(d.km);
+      const blend = (r) => own ? (r * 0.6 + Math.min(own, r * 1.15) * 0.4) : r;
+      const mid = blend(riegelFrom5k(p5.mid, d.km));
+      const opt = Math.min(blend(riegelFrom5k(p5.opt, d.km)), mid);
+      const con = Math.max(blend(riegelFrom5k(p5.con, d.km)), mid);
+      const goal = GOALS[di];
+      let goalHtml = '';
+      if (goal) {
+        if (mid <= goal.t || opt <= goal.t) {
+          let m = 1;
+          for (; m <= 24; m++) {
+            const p = project(fit5k, now5k, m * 4.345, true);
+            if (blend(riegelFrom5k(p.mid, d.km)) <= goal.t) break;
+          }
+          goalHtml = m <= 24
+            ? `<div class="goal-line">${goal.name}: <span class="ok">on track ~${new Date(today.getFullYear(), today.getMonth() + m, 1).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })}</span></div>`
+            : `<div class="goal-line">${goal.name}: <span class="push">beyond 2 yrs at current trend</span></div>`;
+        } else {
+          const needPerWeek = ((mid - goal.t) / d.km) / wA;
+          goalHtml = `<div class="goal-line">${goal.name}: <span class="push">needs ~${Math.max(1, Math.round(needPerWeek))} s/km faster each week</span></div>`;
+        }
+      }
+      return `<div class="card fc-card">
+        <div class="fc-label">${d.label}</div>
+        <div class="fc-value">${fmtTime(mid)}</div>
+        <div class="fc-range">${fmtTime(opt)} – ${fmtTime(con)}</div>
+        <div class="fc-now">now ≈ ${fmtTime(blend(riegelFrom5k(now5k, d.km)))}${own ? ` · best ${fmtTime(own)}` : ''}</div>
+        ${goalHtml}
+      </div>`;
+    }).join('');
+    $('#raceNote').textContent = `Model: recent run paces scaled with the Riegel endurance formula (^${RIEGEL}), blended 60/40 with your actual best at each distance. Trend window: last 26 weeks.`;
+  }
+
+  // ---------- charts ----------
+  let charts = [];
+  function destroy() { charts.forEach(c => c.destroy()); charts = []; }
+
+  function raceChart() {
+    const hist = series5k.map(p => ({ l: labelFor(p.x), y: Math.round(p.y) }));
+    const steps = Math.max(2, months * 2);
+    const proj = [];
+    for (let i = 1; i <= steps; i++) {
+      const wAhead = horizonWeeks() / steps * i;
+      const p = project(fit5k, now5k, wAhead, true);
+      proj.push({ l: labelFor(wAhead), mid: Math.round(p.mid), opt: Math.round(p.opt), con: Math.round(p.con) });
+    }
+    const nH = hist.length;
+    charts.push(new Chart($('#raceChart'), {
+      type: 'line',
+      data: { labels: [...hist.map(h => h.l), ...proj.map(p => p.l)], datasets: [
+        { data: [...hist.map(h => h.y), ...Array(proj.length).fill(null)], borderColor: C.run, borderWidth: 2, pointRadius: 2.5, pointHitRadius: 12, tension: 0.25 },
+        { data: [...Array(nH - 1).fill(null), Math.round(now5k), ...proj.map(p => p.mid)], borderColor: C.run, borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.2 },
+        { data: [...Array(nH - 1).fill(null), Math.round(now5k), ...proj.map(p => p.opt)], borderColor: 'transparent', pointRadius: 0 },
+        { data: [...Array(nH - 1).fill(null), Math.round(now5k), ...proj.map(p => p.con)], borderColor: 'transparent', backgroundColor: bandColor, fill: '-1', pointRadius: 0 },
+      ] },
+      options: { maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+        scales: { y: { ticks: { callback: (v) => fmtTime(v) } }, x: { ticks: { maxTicksLimit: 9 } } },
+        plugins: { tooltip: { filter: (i) => i.datasetIndex < 2, callbacks: { label: (c) => (c.datasetIndex === 1 ? 'projected ' : '') + fmtTime(c.parsed.y) } } } },
+    }));
+  }
+
+  // ---------- distance milestones ----------
+  function kmSection() {
+    const sorted = runs.slice().sort((a, b) => a.date.localeCompare(b.date));
+    let cum = 0;
+    const monthly = {};
+    sorted.forEach(r => { cum += r.distance_m / 1000; monthly[r.date.slice(0, 7)] = cum; });
+    const totalKm = cum;
+    const weeklyKm = runs.filter(r => weeksAgo(r.date) <= 8).reduce((s, r) => s + r.distance_m, 0) / 1000 / 8;
+    const milestones = [];
+    for (let m = Math.ceil((totalKm + 1) / 250) * 250; milestones.length < 3; m += 250) milestones.push(m);
+    const f = (d) => d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+    $('#kmCards').innerHTML = milestones.map(m => {
+      const kmLeft = m - totalKm;
+      const wks = weeklyKm > 0 ? kmLeft / weeklyKm : Infinity;
+      return `<div class="card fc-card">
+        <div class="fc-label">${m.toLocaleString()} km</div>
+        <div class="fc-value">${isFinite(wks) ? f(new Date(today.getTime() + wks * week)) : '—'}</div>
+        <div class="fc-range">${isFinite(wks) ? f(new Date(today.getTime() + wks / 1.25 * week)) + ' – ' + f(new Date(today.getTime() + wks * 1.4 * week)) : 'no recent volume'}</div>
+        <div class="fc-now">${kmLeft.toFixed(0)} km to go · ~${weeklyKm.toFixed(1)} km/week lately</div>
+      </div>`;
+    }).join('');
+
+    const mKeys = Object.keys(monthly).sort();
+    const histLabels = mKeys.map(k => k.slice(2).replace('-', '/'));
+    const histData = mKeys.map(k => +monthly[k].toFixed(0));
+    const projLabels = [], projMid = [], projOpt = [], projCon = [];
+    for (let i = 1; i <= months; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth() + i, 1);
+      projLabels.push(String(d.getFullYear()).slice(2) + '/' + pad(d.getMonth() + 1));
+      projMid.push(+(totalKm + weeklyKm * 4.345 * i).toFixed(0));
+      projOpt.push(+(totalKm + weeklyKm * 1.25 * 4.345 * i).toFixed(0));
+      projCon.push(+(totalKm + weeklyKm * 0.7 * 4.345 * i).toFixed(0));
+    }
+    const nH = histData.length;
+    charts.push(new Chart($('#kmChart'), {
+      type: 'line',
+      data: { labels: [...histLabels, ...projLabels], datasets: [
+        { data: [...histData, ...Array(months).fill(null)], borderColor: C.blue, borderWidth: 2, pointRadius: 2, tension: 0.2 },
+        { data: [...Array(nH - 1).fill(null), Math.round(totalKm), ...projMid], borderColor: C.blue, borderDash: [6, 5], borderWidth: 2, pointRadius: 0 },
+        { data: [...Array(nH - 1).fill(null), Math.round(totalKm), ...projOpt], borderColor: 'transparent', pointRadius: 0 },
+        { data: [...Array(nH - 1).fill(null), Math.round(totalKm), ...projCon], borderColor: 'transparent', backgroundColor: bandColorB, fill: '-1', pointRadius: 0 },
+      ] },
+      options: { maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+        scales: { x: { ticks: { maxTicksLimit: 10 } } },
+        plugins: { tooltip: { filter: (i) => i.datasetIndex < 2, callbacks: { label: (c) => (c.datasetIndex === 1 ? 'projected ' : '') + c.parsed.y + ' km' } } } },
+    }));
+  }
+
+  // ---------- aerobic fitness (running economy) ----------
+  function fitSection() {
+    const pts = runs.filter(r => r.avg_hr && weeksAgo(r.date) <= 26)
+      .map(r => ({ x: -weeksAgo(r.date), y: (r.avg_speed_ms || (r.distance_m / r.duration_s)) / r.avg_hr * 60 }))
+      .sort((a, b) => a.x - b.x);
+    const fit = regress(pts);
+    const nowV = fit ? fit.intercept : (pts.length ? pts[pts.length - 1].y : 1);
+    const steps = Math.max(2, months * 2);
+    const proj = Array.from({ length: steps }, (_, i) => {
+      const wA = horizonWeeks() / steps * (i + 1);
+      const p = project(fit, nowV, wA, false);
+      return { l: labelFor(wA), mid: p.mid, opt: p.opt, con: p.con };
+    });
+    const nH = pts.length;
+    charts.push(new Chart($('#fitChart'), {
+      type: 'line',
+      data: { labels: [...pts.map(p => labelFor(p.x)), ...proj.map(p => p.l)], datasets: [
+        { data: [...pts.map(p => +p.y.toFixed(2)), ...Array(steps).fill(null)], borderColor: C.lift, borderWidth: 2, pointRadius: 2, tension: 0.25 },
+        { data: [...Array(nH - 1).fill(null), +nowV.toFixed(2), ...proj.map(p => +p.mid.toFixed(2))], borderColor: C.lift, borderDash: [6, 5], borderWidth: 2, pointRadius: 0 },
+        { data: [...Array(nH - 1).fill(null), +nowV.toFixed(2), ...proj.map(p => +p.opt.toFixed(2))], borderColor: 'transparent', pointRadius: 0 },
+        { data: [...Array(nH - 1).fill(null), +nowV.toFixed(2), ...proj.map(p => +p.con.toFixed(2))], borderColor: 'transparent', backgroundColor: bandColorG, fill: '-1', pointRadius: 0 },
+      ] },
+      options: { maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+        scales: { x: { ticks: { maxTicksLimit: 9 } } },
+        plugins: { tooltip: { filter: (i) => i.datasetIndex < 2, callbacks: { label: (c) => (c.datasetIndex === 1 ? 'projected ' : '') + c.parsed.y } } } },
+    }));
+  }
+
+  // ---------- big lifts double-progression simulation ----------
+  const BIG_LIFTS = [
+    { name: 'Barbell deep squats', inc: 2.5 }, { name: 'Pull ups', inc: 2.5 },
+    { name: 'Dips', inc: 2.5 }, { name: 'Upper back rows', inc: 2.5 },
+    { name: 'Preacher curl', inc: 1 }, { name: 'Lat pull down', inc: 5 },
+  ];
+  function simulate(startW, startReps, inc, perWeek) {
+    const mk = (sessionsPerCycle) => {
+      const totalSessions = Math.max(2, Math.round(perWeek * horizonWeeks()));
+      const out = []; let w = startW, reps = Math.min(Math.max(startReps, 6), 8);
+      for (let s = 1; s <= totalSessions; s++) {
+        reps += 3 / sessionsPerCycle;
+        if (reps >= 8) { w = +(w + inc).toFixed(1); reps = 6; }
+        out.push({ l: labelFor(s / perWeek), w });
+      }
+      const step = Math.max(1, Math.floor(out.length / 10));
+      return out.filter((_, i) => i % step === 0 || i === out.length - 1);
+    };
+    const mid = mk(3), opt = mk(2), con = mk(4.5);
+    const align = (arr) => { while (arr.length < mid.length) arr.push({ ...(arr[arr.length - 1] || { l: '', w: startW }) }); return arr.slice(0, mid.length); };
+    return { mid, opt: align(opt), con: align(con) };
+  }
+  function liftSection() {
+    const byEx = {};
+    lifts.forEach(l => l.exercises.forEach(e => {
+      (byEx[e.exercise] = byEx[e.exercise] || { day: l.day, pts: [] }).pts.push({ date: l.date, w: e.weight_kg, reps: e.reps });
+    }));
+    const tabDates = {};
+    lifts.forEach(l => (tabDates[l.day] = tabDates[l.day] || []).push(l.date));
+    const freq = {};
+    Object.entries(tabDates).forEach(([tab, ds]) => {
+      ds.sort();
+      const span = Math.max(1, (parse(ds[ds.length - 1]) - parse(ds[0])) / week);
+      freq[tab] = Math.min(1.5, Math.max(0.4, (ds.length - 1) / span || 0.5));
+    });
+    const active = BIG_LIFTS.filter(b => byEx[b.name]);
+    $('#liftGrid').innerHTML = active.map((b, i) => {
+      const ex = byEx[b.name];
+      ex.pts.sort((a, c) => a.date.localeCompare(c.date));
+      const last = ex.pts[ex.pts.length - 1];
+      const sim = simulate(last.w, last.reps[0] || 6, b.inc, freq[ex.day] || 0.7);
+      const target = sim.mid[sim.mid.length - 1].w;
+      return `<div class="card ex-card">
+        <div class="ex-head"><span class="ex-name">${b.name}</span><span class="ex-target">→ ~${target} kg</span></div>
+        <div class="ex-chart"><canvas id="pl${i}" role="img" aria-label="Projected weight for ${b.name}: about ${target} kg in ${months} months"></canvas></div>
+        <div class="ex-sub">now ${last.w} kg · +${b.inc} kg per 6→8 cycle · ~${(freq[ex.day] || 0.7).toFixed(1)} sessions/wk</div>
+      </div>`;
+    }).join('');
+    active.forEach((b, i) => {
+      const ex = byEx[b.name];
+      const last = ex.pts[ex.pts.length - 1];
+      const sim = simulate(last.w, last.reps[0] || 6, b.inc, freq[ex.day] || 0.7);
+      const nH = ex.pts.length;
+      charts.push(new Chart($('#pl' + i), {
+        type: 'line',
+        data: { labels: [...ex.pts.map(p => p.date.slice(5).replace('-', '/')), ...sim.mid.map(p => p.l)], datasets: [
+          { data: [...ex.pts.map(p => p.w), ...Array(sim.mid.length).fill(null)], borderColor: C.lift, borderWidth: 2, pointRadius: 2.5, tension: 0.2 },
+          { data: [...Array(nH - 1).fill(null), last.w, ...sim.mid.map(p => p.w)], borderColor: C.lift, borderDash: [5, 4], borderWidth: 2, pointRadius: 0, stepped: true },
+          { data: [...Array(nH - 1).fill(null), last.w, ...sim.opt.map(p => p.w)], borderColor: 'transparent', pointRadius: 0, stepped: true },
+          { data: [...Array(nH - 1).fill(null), last.w, ...sim.con.map(p => p.w)], borderColor: 'transparent', backgroundColor: bandColorG, fill: '-1', pointRadius: 0, stepped: true },
+        ] },
+        options: { maintainAspectRatio: false,
+          scales: { y: { grace: '10%', ticks: { maxTicksLimit: 4, font: { size: 10 } } }, x: { ticks: { maxTicksLimit: 4, font: { size: 10 } } } },
+          plugins: { tooltip: { filter: (t) => t.datasetIndex < 2, callbacks: { label: (c) => (c.datasetIndex === 1 ? 'projected ' : '') + c.parsed.y + ' kg' } } } },
+      }));
+    });
+  }
+
+  // ---------- render ----------
+  function renderAll() {
+    destroy();
+    raceCards();
+    raceChart();
+    kmSection();
+    fitSection();
+    liftSection();
+  }
+  $('#synced').textContent = 'Last synced ' + new Date(data.generated_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  document.querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+    ch.setAttribute('aria-pressed', 'true');
+    months = +ch.dataset.months;
+    renderAll();
+  }));
+  $('#loading').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  renderAll();
+})();
+</script>
+</body>
+</html>
