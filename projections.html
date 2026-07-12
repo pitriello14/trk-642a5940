@@ -211,8 +211,13 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
     // keeps the optimistic edge moving even off a flat/negative fit.
     const trendDir = lowerIsBetter ? Math.min(fit.slope, 0) : Math.max(fit.slope, 0);
     const assumedBestCase = lowerIsBetter ? -Math.abs(nowVal) * 0.0015 : Math.abs(nowVal) * 0.0015;
+    // A real improving trend drives the headline number outright. When the
+    // recent fit is flat or worsening (nothing to responsibly extrapolate),
+    // fall back to half the assumed baseline-adaptation rate so the headline
+    // still visibly moves with the horizon instead of freezing at "today".
+    const dir = trendDir !== 0 ? trendDir : assumedBestCase * 0.5;
     const optDir = lowerIsBetter ? Math.min(trendDir, assumedBestCase) : Math.max(trendDir, assumedBestCase);
-    const mid = nowVal + trendDir * 0.75 * weeksAhead;
+    const mid = nowVal + dir * weeksAhead;
     const optRaw = nowVal + optDir * weeksAhead - spread;
     const opt = lowerIsBetter ? Math.min(optRaw, mid) : Math.max(optRaw, mid);
     const con = lowerIsBetter ? mid + spread : mid - spread;
