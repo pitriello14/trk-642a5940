@@ -202,9 +202,21 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   ) || (ownBest5k ?? 1500);
 
   function project(fit, nowVal, weeksAhead, lowerIsBetter) {
-    if (!fit) return { mid: nowVal, opt: nowVal, con: nowVal };
-    const dir = lowerIsBetter ? Math.min(fit.slope, 0) : Math.max(fit.slope, 0);
-    return { mid: nowVal + dir * 0.75 * weeksAhead, opt: nowVal + dir * weeksAhead, con: nowVal + dir * 0.4 * weeksAhead };
+    // Uncertainty always grows with horizon, even when the recent trend is flat
+    // or pointing the wrong way (a plateau doesn't mean zero future variance).
+    const spread = Math.abs(nowVal) * 0.006 * Math.sqrt(weeksAhead);
+    if (!fit) return { mid: nowVal, opt: nowVal - spread, con: nowVal + spread };
+    // Central estimate never extrapolates a worsening trend (that's not a
+    // useful "projection"), but a modest assumed best-case improvement rate
+    // keeps the optimistic edge moving even off a flat/negative fit.
+    const trendDir = lowerIsBetter ? Math.min(fit.slope, 0) : Math.max(fit.slope, 0);
+    const assumedBestCase = lowerIsBetter ? -Math.abs(nowVal) * 0.0015 : Math.abs(nowVal) * 0.0015;
+    const optDir = lowerIsBetter ? Math.min(trendDir, assumedBestCase) : Math.max(trendDir, assumedBestCase);
+    const mid = nowVal + trendDir * 0.75 * weeksAhead;
+    const optRaw = nowVal + optDir * weeksAhead - spread;
+    const opt = lowerIsBetter ? Math.min(optRaw, mid) : Math.max(optRaw, mid);
+    const con = lowerIsBetter ? mid + spread : mid - spread;
+    return { mid, opt, con };
   }
 
   let months = 3;
