@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-12T09:26:06+00:00",
+ "generated_at": "2026-07-12T10:53:50+00:00",
  "hr_zones": [
   [
    0,
@@ -560,13 +560,7 @@
    "avg_hr": 158.0,
    "max_hr": 182.0,
    "avg_speed_ms": 2.839,
-   "hr_zone_seconds": [
-    2095418,
-    1559,
-    861,
-    717,
-    0
-   ],
+   "hr_zone_seconds": null,
    "strava_type": "Run"
   },
   {
