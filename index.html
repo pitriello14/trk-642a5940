@@ -11,12 +11,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #0F172A;
-  --card: #192134;
-  --card-2: #1E293B;
-  --border: rgba(255,255,255,0.08);
-  --fg: #F8FAFC;
-  --muted: #94A3B8;
+  --bg: #0B0B0C;
+  --card: #17171B;
+  --card-2: #1D1D22;
+  --border: rgba(255,255,255,0.14);
+  --fg: #FAFAFA;
+  --muted: #9CA0AA;
   --accent: #F97316;
   --run: #EA580C;
   --lift: #16A34A;
@@ -24,7 +24,7 @@
   --hr: #E66767;
   --amber: #C98500;
   --z1: #3B82F6; --z2: #16A34A; --z3: #C98500; --z4: #EA580C; --z5: #E66767;
-  --radius: 14px;
+  --radius: 4px;
   --gap: 16px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,11 +47,11 @@ h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.5px; text-transform: u
 h1 .accent { color: var(--accent); }
 .synced { color: var(--muted); font-size: 14px; margin-top: 2px; }
 .tabs { display: flex; gap: 8px; margin-top: 14px; }
-.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 22px; border-radius: 10px;
-  background: var(--card); border: 1px solid var(--border); color: var(--muted);
-  font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 17px; font-weight: 600; letter-spacing: 0.6px;
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 22px; border-radius: var(--radius);
+  background: var(--card); border: 1.5px solid var(--border); color: var(--muted);
+  font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 0.8px;
   text-transform: uppercase; text-decoration: none; }
-.tab.active { background: var(--accent); border-color: var(--accent); color: #0F172A; }
+.tab.active { background: var(--accent); border-color: var(--accent); color: #0B0B0C; }
 .tab:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 
 .hero-photo {
@@ -61,7 +61,7 @@ h1 .accent { color: var(--accent); }
 .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hero-photo::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(15,23,42,0) 40%, rgba(15,23,42,0.85) 100%);
+  background: linear-gradient(180deg, rgba(11,11,12,0) 40%, rgba(11,11,12,0.85) 100%);
 }
 .hero-caption {
   position: absolute; left: 18px; bottom: 14px; right: 18px; z-index: 1;
@@ -70,30 +70,43 @@ h1 .accent { color: var(--accent); }
 }
 
 h2 {
-  font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
-  margin: 32px 0 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0px;
+  margin: 44px 0 16px; display: flex; align-items: center; gap: 9px;
+  position: relative; padding-bottom: 12px;
 }
-h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
-.range-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 16px; }
+h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 46px; height: 3px; background: var(--accent); }
+h2 svg { width: 19px; height: 19px; color: var(--accent); flex: none; }
+h2 .kicker {
+  font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px;
+  font-variant-numeric: tabular-nums; margin-right: 1px;
+}
+.range-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 16px; }
+.range-row h2 { margin-bottom: 0; }
 .range-label { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-.chips { display: flex; gap: 8px; margin: 16px 0 4px; flex-wrap: wrap; }
-.range-row .chips { margin: 0; }
+
+/* Segmented control: one bordered strip, no gaps, sharp dividers -- not a row of floating pills */
+.chips {
+  display: inline-flex; margin: 16px 0 4px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; width: fit-content;
+}
+.range-row .chips { margin: 0 0 2px; }
 .chip {
-  background: var(--card); color: var(--muted); border: 1px solid var(--border);
-  border-radius: 999px; padding: 9px 18px; font-size: 16px; font-weight: 600;
-  letter-spacing: 0.5px; cursor: pointer; min-height: 44px; min-width: 56px;
-  transition: color .2s, background .2s, border-color .2s, transform .15s ease-out, box-shadow .15s ease-out;
+  background: transparent; color: var(--muted); border: none; border-radius: 0;
+  padding: 9px 20px; font-size: 16px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; min-height: 44px; min-width: 56px;
+  transition: color .15s, background .15s;
   touch-action: manipulation;
 }
-.chip[aria-pressed="true"] { background: var(--accent); color: #0F172A; border-color: var(--accent); }
-.chip:hover, .tab:hover, .toggle:hover {
-  transform: scale(1.06);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
-}
-.chip:active, .tab:active, .toggle:active { transform: scale(0.96); }
+.chip + .chip { border-left: 1.5px solid var(--border); }
+.chip[aria-pressed="true"] { background: var(--accent); color: #0B0B0C; }
+.chip:hover { background: rgba(255,255,255,0.08); color: var(--fg); }
+.chip[aria-pressed="true"]:hover { background: var(--accent); color: #0B0B0C; }
+.tab:hover, .toggle:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.chip:active { background: rgba(255,255,255,0.14); }
+.tab:active, .toggle:active { transform: scale(0.96); }
 .chip:focus-visible, .toggle:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .tab, .toggle { transition: transform .15s ease-out, box-shadow .15s ease-out, background .2s, color .2s; }
-@media (hover: none) { .chip:hover, .tab:hover, .toggle:hover { transform: none; box-shadow: none; } }
+@media (hover: none) { .tab:hover, .toggle:hover { transform: none; box-shadow: none; } }
 
 .grid { display: grid; gap: var(--gap); }
 .grid-2 { grid-template-columns: 1fr 1fr; }
@@ -101,29 +114,29 @@ h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
 @media (min-width: 768px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
 
 .card {
-  background: var(--card); border: 1px solid var(--border);
+  background: var(--card); border: 1.5px solid var(--border);
   border-radius: var(--radius); padding: 18px;
 }
-.stat-label { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.stat-label { color: var(--muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; }
 .stat-value {
-  font-size: 44px; font-weight: 700; line-height: 1.05; margin-top: 4px;
-  font-variant-numeric: tabular-nums;
+  font-size: clamp(38px, 8vw, 58px); font-weight: 700; line-height: 0.98; margin-top: 6px;
+  letter-spacing: -1px; font-variant-numeric: tabular-nums;
 }
-.stat-value .unit { font-size: 20px; color: var(--muted); font-weight: 600; margin-left: 2px; }
-.stat-sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.stat-value .unit { font-size: 19px; color: var(--muted); font-weight: 600; margin-left: 2px; letter-spacing: 0; }
+.stat-sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
 
 .pr-row { display: grid; gap: var(--gap); grid-template-columns: 1fr 1fr; }
 @media (min-width: 768px) { .pr-row { grid-template-columns: repeat(4, 1fr); } }
-.pr-card { position: relative; overflow: hidden; }
+.pr-card { position: relative; overflow: hidden; padding-left: 22px; }
 .pr-card::before {
-  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent);
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: var(--accent);
 }
-.pr-title { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.pr-title { color: var(--muted); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; display: flex; align-items: center; gap: 6px; }
 .pr-title svg { width: 15px; height: 15px; color: var(--amber); }
-.pr-value { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 4px; }
-.pr-sub { color: var(--muted); font-size: 13px; }
-.progressbar { background: var(--card-2); border-radius: 999px; height: 10px; margin-top: 10px; overflow: hidden; }
-.progressbar > div { height: 100%; background: var(--accent); border-radius: 999px; }
+.pr-value { font-size: clamp(26px, 5vw, 34px); font-weight: 700; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; margin-top: 5px; }
+.pr-sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.progressbar { background: var(--card-2); border-radius: 2px; height: 8px; margin-top: 10px; overflow: hidden; }
+.progressbar > div { height: 100%; background: var(--accent); border-radius: 0; }
 
 .vs-card .delta { font-size: 18px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; }
 .vs-card .delta svg { width: 14px; height: 14px; }
@@ -148,8 +161,8 @@ h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
 .ex-chart { position: relative; height: 110px; margin-top: 8px; }
 .ex-last { color: var(--muted); font-size: 13px; margin-top: 6px; font-variant-numeric: tabular-nums; }
 .badge-pr {
-  background: rgba(249,115,22,0.15); color: var(--accent); border: 1px solid rgba(249,115,22,0.4);
-  font-size: 11px; font-weight: 600; letter-spacing: 0.8px; padding: 2px 8px; border-radius: 999px;
+  background: var(--accent); color: #0B0B0C; border: none;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.8px; padding: 3px 8px; border-radius: 2px;
 }
 
 .feed { display: flex; flex-direction: column; gap: 10px; }
@@ -159,7 +172,7 @@ h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
   padding: 14px 16px;
 }
 .feed-icon {
-  width: 40px; height: 40px; border-radius: 12px; flex: none;
+  width: 40px; height: 40px; border-radius: var(--radius); flex: none;
   display: flex; align-items: center; justify-content: center;
 }
 .feed-icon svg { width: 22px; height: 22px; }
@@ -172,9 +185,9 @@ h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
 .feed-date { color: var(--muted); font-size: 13px; flex: none; text-align: right; font-variant-numeric: tabular-nums; }
 
 .toggle {
-  background: var(--card); color: var(--muted); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 500; cursor: pointer;
-  min-height: 44px; font-family: inherit;
+  background: var(--card); color: var(--muted); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+  min-height: 44px; font-family: inherit; letter-spacing: 0.3px;
 }
 table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 12px; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
@@ -204,17 +217,17 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   <div id="loading" class="loading">Loading workout data…</div>
 
   <main id="app" class="hidden">
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Now</h2>
+    <h2><span class="kicker">01</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Now</h2>
     <div class="grid grid-4" id="hero"></div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Records &amp; Milestones</h2>
+    <h2><span class="kicker">02</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Records &amp; Milestones</h2>
     <div class="pr-row" id="prs"></div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="vs-title">This Month vs Last</span></h2>
+    <h2><span class="kicker">03</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="vs-title">This Month vs Last</span></h2>
     <div class="grid grid-4" id="vs"></div>
 
     <div class="range-row">
-      <h2 style="margin: 32px 0 0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Heart Rate</h2>
+      <h2 style="margin: 44px 0 0;"><span class="kicker">04</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Heart Rate</h2>
       <div class="chips" role="group" aria-label="Chart time range">
         <button class="chip" data-range="90" aria-pressed="true">3M</button>
         <button class="chip" data-range="180" aria-pressed="false">6M</button>
@@ -234,7 +247,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       </div>
     </div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-2 2 4 4-9 9-4 1 1-4 9-9 4 4 2-2-5-5Z" transform="rotate(90 12 12)"/><circle cx="17" cy="5" r="1.5"/><path d="M4 17l5 5"/><path d="M15 8.5 8.5 15"/></svg>Running</h2>
+    <h2><span class="kicker">05</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 2-2 2 4 4-9 9-4 1 1-4 9-9 4 4 2-2-5-5Z" transform="rotate(90 12 12)"/><circle cx="17" cy="5" r="1.5"/><path d="M4 17l5 5"/><path d="M15 8.5 8.5 15"/></svg>Running</h2>
     <div class="grid" style="grid-template-columns: 1fr;">
       <div class="card chart-card">
         <div class="chart-title">Pace per run (min/km — lower is faster)</div>
@@ -246,11 +259,11 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       </div>
     </div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>Strength Progress</h2>
+    <h2><span class="kicker">06</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>Strength Progress</h2>
     <p class="stat-sub" style="margin: -6px 0 12px;">Working weight per session, every exercise. All weights in kg.</p>
     <div class="ex-grid" id="exGrid"></div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Recent Workouts</h2>
+    <h2><span class="kicker">07</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Recent Workouts</h2>
     <div class="feed" id="feed"></div>
 
     <div style="margin-top: 24px;">
@@ -312,7 +325,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   Chart.defaults.animation = reduced ? false : { duration: 400 };
   Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
   Chart.defaults.plugins.legend.display = false;
-  Chart.defaults.plugins.tooltip.backgroundColor = '#1E293B';
+  Chart.defaults.plugins.tooltip.backgroundColor = css('--card-2');
   Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.12)';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.titleColor = '#F8FAFC';

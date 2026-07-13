@@ -11,11 +11,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #0F172A; --card: #192134; --card-2: #1E293B;
-  --border: rgba(255,255,255,0.08);
-  --fg: #F8FAFC; --muted: #94A3B8;
+  --bg: #0B0B0C; --card: #17171B; --card-2: #1D1D22;
+  --border: rgba(255,255,255,0.14);
+  --fg: #FAFAFA; --muted: #9CA0AA;
   --accent: #F97316; --run: #EA580C; --lift: #16A34A; --blue: #3B82F6; --hr: #E66767; --amber: #C98500;
-  --radius: 14px; --gap: 16px;
+  --radius: 4px; --gap: 16px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { color-scheme: dark; }
@@ -27,43 +27,60 @@ h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.5px; text-transform: u
 h1 .accent { color: var(--accent); }
 .synced { color: var(--muted); font-size: 14px; margin-top: 2px; }
 .tabs { display: flex; gap: 8px; margin-top: 14px; }
-.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 22px; border-radius: 10px;
-  background: var(--card); border: 1px solid var(--border); color: var(--muted);
-  font-size: 17px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; text-decoration: none; }
-.tab.active { background: var(--accent); border-color: var(--accent); color: #0F172A; }
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 22px; border-radius: var(--radius);
+  background: var(--card); border: 1.5px solid var(--border); color: var(--muted);
+  font-size: 17px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; text-decoration: none; }
+.tab.active { background: var(--accent); border-color: var(--accent); color: #0B0B0C; }
 .tab:focus-visible, .chip:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-.tab:hover, .chip:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
-.tab:active, .chip:active { transform: scale(0.96); }
-.tab, .chip { transition: color .2s, background .2s, border-color .2s, transform .15s ease-out, box-shadow .15s ease-out; }
-@media (hover: none) { .tab:hover, .chip:hover { transform: none; box-shadow: none; } }
+.tab:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.tab:active { transform: scale(0.96); }
+.tab { transition: color .2s, background .2s, border-color .2s, transform .15s ease-out, box-shadow .15s ease-out; }
+@media (hover: none) { .tab:hover { transform: none; box-shadow: none; } }
 
 .hero-photo {
   position: relative; margin: 16px 0 0; border-radius: var(--radius); overflow: hidden;
   border: 1px solid var(--border); aspect-ratio: 16/9; max-height: 320px;
 }
 .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.hero-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,0) 40%, rgba(15,23,42,0.85) 100%); }
+.hero-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,11,12,0) 40%, rgba(11,11,12,0.85) 100%); }
 .hero-caption {
   position: absolute; left: 18px; bottom: 14px; right: 18px; z-index: 1;
   font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 15px; font-weight: 600;
   letter-spacing: 0.4px; color: var(--muted); text-transform: uppercase;
 }
 
-h2 { font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; }
-h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
-.chips { display: flex; gap: 8px; margin: 18px 0 4px; }
-.chip { background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 999px;
-  padding: 9px 18px; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; min-height: 44px; min-width: 56px;
-  transition: color .2s, background .2s; touch-action: manipulation; }
-.chip[aria-pressed="true"] { background: var(--accent); color: #0F172A; border-color: var(--accent); }
+h2 {
+  font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 0px;
+  margin: 44px 0 16px; display: flex; align-items: center; gap: 9px;
+  position: relative; padding-bottom: 12px;
+}
+h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 46px; height: 3px; background: var(--accent); }
+h2 svg { width: 19px; height: 19px; color: var(--accent); flex: none; }
+h2 .kicker { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; font-variant-numeric: tabular-nums; margin-right: 1px; }
+
+/* Segmented control: one bordered strip, no gaps -- not floating pills */
+.chips {
+  display: inline-flex; margin: 18px 0 4px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; width: fit-content;
+}
+.chip {
+  background: transparent; color: var(--muted); border: none; border-radius: 0;
+  padding: 9px 20px; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer;
+  min-height: 44px; min-width: 56px; transition: color .15s, background .15s; touch-action: manipulation;
+}
+.chip + .chip { border-left: 1.5px solid var(--border); }
+.chip[aria-pressed="true"] { background: var(--accent); color: #0B0B0C; }
+.chip:hover { background: rgba(255,255,255,0.08); color: var(--fg); }
+.chip[aria-pressed="true"]:hover { background: var(--accent); color: #0B0B0C; }
+.chip:active { background: rgba(255,255,255,0.14); }
 .grid { display: grid; gap: var(--gap); }
 .grid-3 { grid-template-columns: 1fr; }
 @media (min-width: 768px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
-.fc-card { position: relative; overflow: hidden; }
-.fc-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent); }
-.fc-label { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-.fc-value { font-size: 40px; font-weight: 700; line-height: 1.05; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px; }
+.fc-card { position: relative; overflow: hidden; padding-left: 22px; }
+.fc-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: var(--accent); }
+.fc-label { color: var(--muted); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; }
+.fc-value { font-size: clamp(30px, 6vw, 44px); font-weight: 700; line-height: 1; letter-spacing: -1px; margin-top: 5px; font-variant-numeric: tabular-nums; }
 .fc-range { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
 .fc-now { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
 .goal-line { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 14px; }
@@ -112,7 +129,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
     </div>
     <p class="note" style="padding-left:0">Projections extrapolate your recent training. Solid = history, dashed = projected, shaded = optimistic→conservative range. Not a promise — a trajectory.</p>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span id="raceTitle">Race Predictions</span></h2>
+    <h2><span class="kicker">01</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span id="raceTitle">Race Predictions</span></h2>
     <div class="grid grid-3" id="raceCards"></div>
     <div class="card chart-card" style="margin-top: var(--gap);">
       <div class="chart-title">Estimated 5K time — history &amp; projection (mm:ss)</div>
@@ -120,21 +137,21 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       <div class="note" id="raceNote"></div>
     </div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="m17 7-5-5-5 5"/><path d="M5 22h14"/></svg>Distance Milestones</h2>
+    <h2><span class="kicker">02</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="m17 7-5-5-5 5"/><path d="M5 22h14"/></svg>Distance Milestones</h2>
     <div class="grid grid-3" id="kmCards"></div>
     <div class="card chart-card" style="margin-top: var(--gap);">
       <div class="chart-title">Cumulative distance (km) — toward the next milestones</div>
       <div class="chart-wrap"><canvas id="kmChart" role="img" aria-label="Cumulative running distance with projection to future milestones"></canvas></div>
     </div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Aerobic Fitness</h2>
+    <h2><span class="kicker">03</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Aerobic Fitness</h2>
     <div class="card chart-card">
       <div class="chart-title">Running economy — metres per heartbeat (higher is fitter)</div>
       <div class="chart-wrap"><canvas id="fitChart" role="img" aria-label="Running economy trend with projection"></canvas></div>
       <div class="note">Speed ÷ heart rate per run. Rising = covering more ground per beat = your engine improving.</div>
     </div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>Big Lifts — Projected</h2>
+    <h2><span class="kicker">04</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>Big Lifts — Projected</h2>
     <p class="note" style="padding-left:0">Simulated with your own rule: build first set to 8 reps, then add the exercise's increment and rebuild from 6. Assumes your current training frequency.</p>
     <div class="ex-grid" id="liftGrid"></div>
 
@@ -174,7 +191,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   Chart.defaults.animation = reduced ? false : { duration: 400 };
   Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
   Chart.defaults.plugins.legend.display = false;
-  Chart.defaults.plugins.tooltip.backgroundColor = '#1E293B';
+  Chart.defaults.plugins.tooltip.backgroundColor = css('--card-2');
   Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.12)';
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.titleColor = '#F8FAFC';
