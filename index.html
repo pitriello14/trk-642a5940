@@ -53,21 +53,47 @@ h1 .accent { color: var(--accent); }
   text-transform: uppercase; text-decoration: none; }
 .tab.active { background: var(--accent); border-color: var(--accent); color: #0F172A; }
 .tab:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.hero-photo {
+  position: relative; margin: 16px 0 0; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); aspect-ratio: 16/9; max-height: 320px;
+}
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-photo::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(15,23,42,0) 40%, rgba(15,23,42,0.85) 100%);
+}
+.hero-caption {
+  position: absolute; left: 18px; bottom: 14px; right: 18px; z-index: 1;
+  font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 15px; font-weight: 600;
+  letter-spacing: 0.4px; color: var(--muted); text-transform: uppercase;
+}
+
 h2 {
   font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
   margin: 32px 0 12px; display: flex; align-items: center; gap: 8px;
 }
 h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+.range-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 16px; }
+.range-label { color: var(--muted); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
 .chips { display: flex; gap: 8px; margin: 16px 0 4px; flex-wrap: wrap; }
+.range-row .chips { margin: 0; }
 .chip {
   background: var(--card); color: var(--muted); border: 1px solid var(--border);
   border-radius: 999px; padding: 9px 18px; font-size: 16px; font-weight: 600;
   letter-spacing: 0.5px; cursor: pointer; min-height: 44px; min-width: 56px;
-  transition: color .2s, background .2s, border-color .2s;
+  transition: color .2s, background .2s, border-color .2s, transform .15s ease-out, box-shadow .15s ease-out;
   touch-action: manipulation;
 }
 .chip[aria-pressed="true"] { background: var(--accent); color: #0F172A; border-color: var(--accent); }
+.chip:hover, .tab:hover, .toggle:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+.chip:active, .tab:active, .toggle:active { transform: scale(0.96); }
 .chip:focus-visible, .toggle:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.tab, .toggle { transition: transform .15s ease-out, box-shadow .15s ease-out, background .2s, color .2s; }
+@media (hover: none) { .chip:hover, .tab:hover, .toggle:hover { transform: none; box-shadow: none; } }
 
 .grid { display: grid; gap: var(--gap); }
 .grid-2 { grid-template-columns: 1fr 1fr; }
@@ -170,18 +196,15 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       <a class="tab active" href="./index.html" aria-current="page">Dashboard</a>
       <a class="tab" href="./projections.html">Projections</a>
     </nav>
+    <div class="hero-photo">
+      <img src="./assets/hero-mountain.jpg" alt="Two trail runners crossing a mountain ridge at sunrise, reflected in a still alpine lake" loading="eager">
+      <div class="hero-caption">Every session is one more step up the mountain</div>
+    </div>
   </header>
 
   <div id="loading" class="loading">Loading workout data…</div>
 
   <main id="app" class="hidden">
-    <div class="chips" role="group" aria-label="Time range">
-      <button class="chip" data-range="30" aria-pressed="true">30D</button>
-      <button class="chip" data-range="90" aria-pressed="false">90D</button>
-      <button class="chip" data-range="365" aria-pressed="false">1Y</button>
-      <button class="chip" data-range="0" aria-pressed="false">ALL</button>
-    </div>
-
     <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Now</h2>
     <div class="grid grid-4" id="hero"></div>
 
@@ -191,7 +214,15 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
     <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="vs-title">This Month vs Last</span></h2>
     <div class="grid grid-4" id="vs"></div>
 
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Heart Rate</h2>
+    <div class="range-row">
+      <h2 style="margin: 32px 0 0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>Heart Rate</h2>
+      <div class="chips" role="group" aria-label="Chart time range">
+        <button class="chip" data-range="90" aria-pressed="true">3M</button>
+        <button class="chip" data-range="180" aria-pressed="false">6M</button>
+        <button class="chip" data-range="365" aria-pressed="false">1Y</button>
+      </div>
+    </div>
+    <p class="range-label" style="margin: -8px 0 12px;">Applies to the charts below</p>
     <div class="grid" style="grid-template-columns: 1fr;">
       <div class="card chart-card">
         <div class="chart-title">Avg heart rate per run (bpm)</div>
@@ -272,7 +303,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   const today = new Date();
 
   // ---------- range filter ----------
-  let rangeDays = 30;
+  let rangeDays = 90;
   const inRange = (w) => rangeDays === 0 || (today - parse(w.date)) <= rangeDays * day;
 
   // ---------- Chart.js defaults ----------

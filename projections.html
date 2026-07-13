@@ -32,6 +32,23 @@ h1 .accent { color: var(--accent); }
   font-size: 17px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; text-decoration: none; }
 .tab.active { background: var(--accent); border-color: var(--accent); color: #0F172A; }
 .tab:focus-visible, .chip:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.tab:hover, .chip:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.tab:active, .chip:active { transform: scale(0.96); }
+.tab, .chip { transition: color .2s, background .2s, border-color .2s, transform .15s ease-out, box-shadow .15s ease-out; }
+@media (hover: none) { .tab:hover, .chip:hover { transform: none; box-shadow: none; } }
+
+.hero-photo {
+  position: relative; margin: 16px 0 0; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); aspect-ratio: 16/9; max-height: 320px;
+}
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,0) 40%, rgba(15,23,42,0.85) 100%); }
+.hero-caption {
+  position: absolute; left: 18px; bottom: 14px; right: 18px; z-index: 1;
+  font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 15px; font-weight: 600;
+  letter-spacing: 0.4px; color: var(--muted); text-transform: uppercase;
+}
+
 h2 { font-size: 22px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; }
 h2 svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
 .chips { display: flex; gap: 8px; margin: 18px 0 4px; }
@@ -80,6 +97,10 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       <a class="tab" href="./index.html">Dashboard</a>
       <a class="tab active" href="./projections.html" aria-current="page">Projections</a>
     </nav>
+    <div class="hero-photo">
+      <img src="./assets/hero-marathon.jpg" alt="Blurred motion shot of marathon runners sprinting through a city street at dusk" loading="eager">
+      <div class="hero-caption">Where the next race puts you</div>
+    </div>
   </header>
 
   <div id="loading" class="loading">Crunching the numbers…</div>
