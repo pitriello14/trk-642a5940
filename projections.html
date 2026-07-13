@@ -178,6 +178,16 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const C = { run: css('--run'), lift: css('--lift'), blue: css('--blue'), hr: css('--hr'), amber: css('--amber'), muted: css('--muted') };
+  // Color the solid/historical line by its own trend: green if it ends
+  // higher on screen than it started, red if lower. `reversed` accounts for
+  // inverted-axis charts so the color matches what the line visually does.
+  function trendColor(values, reversed) {
+    const clean = values.filter(v => v !== null && v !== undefined && !isNaN(v));
+    if (clean.length < 2 || clean[0] === clean[clean.length - 1]) return C.muted;
+    const first = clean[0], last = clean[clean.length - 1];
+    const risesOnScreen = reversed ? last < first : last > first;
+    return risesOnScreen ? C.lift : C.hr;
+  }
   const bandColor = 'rgba(234,88,12,0.14)';
   const bandColorG = 'rgba(22,163,74,0.16)';
   const bandColorB = 'rgba(59,130,246,0.14)';
@@ -339,10 +349,11 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       proj.push({ l: labelFor(wAhead), mid: Math.round(p.mid), opt: Math.round(p.opt), con: Math.round(p.con) });
     }
     const nH = hist.length;
+    const histY = hist.map(h => h.y);
     charts.push(new Chart($('#raceChart'), {
       type: 'line',
       data: { labels: [...hist.map(h => h.l), ...proj.map(p => p.l)], datasets: [
-        { data: [...hist.map(h => h.y), ...Array(proj.length).fill(null)], borderColor: C.run, borderWidth: 2, pointRadius: 2.5, pointHitRadius: 12, tension: 0.25 },
+        { data: [...histY, ...Array(proj.length).fill(null)], borderColor: trendColor(histY, false), borderWidth: 2, pointRadius: 2.5, pointHitRadius: 12, tension: 0.25 },
         { data: [...Array(nH - 1).fill(null), Math.round(now5k), ...proj.map(p => p.mid)], borderColor: C.run, borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.2 },
         { data: [...Array(nH - 1).fill(null), Math.round(now5k), ...proj.map(p => p.opt)], borderColor: 'transparent', pointRadius: 0 },
         { data: [...Array(nH - 1).fill(null), Math.round(now5k), ...proj.map(p => p.con)], borderColor: 'transparent', backgroundColor: bandColor, fill: '-1', pointRadius: 0 },
@@ -390,7 +401,7 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
     charts.push(new Chart($('#kmChart'), {
       type: 'line',
       data: { labels: [...histLabels, ...projLabels], datasets: [
-        { data: [...histData, ...Array(months).fill(null)], borderColor: C.blue, borderWidth: 2, pointRadius: 2, tension: 0.2 },
+        { data: [...histData, ...Array(months).fill(null)], borderColor: trendColor(histData, false), borderWidth: 2, pointRadius: 2, tension: 0.2 },
         { data: [...Array(nH - 1).fill(null), Math.round(totalKm), ...projMid], borderColor: C.blue, borderDash: [6, 5], borderWidth: 2, pointRadius: 0 },
         { data: [...Array(nH - 1).fill(null), Math.round(totalKm), ...projOpt], borderColor: 'transparent', pointRadius: 0 },
         { data: [...Array(nH - 1).fill(null), Math.round(totalKm), ...projCon], borderColor: 'transparent', backgroundColor: bandColorB, fill: '-1', pointRadius: 0 },
@@ -415,10 +426,11 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       return { l: labelFor(wA), mid: p.mid, opt: p.opt, con: p.con };
     });
     const nH = pts.length;
+    const fitY = pts.map(p => +p.y.toFixed(2));
     charts.push(new Chart($('#fitChart'), {
       type: 'line',
       data: { labels: [...pts.map(p => labelFor(p.x)), ...proj.map(p => p.l)], datasets: [
-        { data: [...pts.map(p => +p.y.toFixed(2)), ...Array(steps).fill(null)], borderColor: C.lift, borderWidth: 2, pointRadius: 2, tension: 0.25 },
+        { data: [...fitY, ...Array(steps).fill(null)], borderColor: trendColor(fitY, false), borderWidth: 2, pointRadius: 2, tension: 0.25 },
         { data: [...Array(nH - 1).fill(null), +nowV.toFixed(2), ...proj.map(p => +p.mid.toFixed(2))], borderColor: C.lift, borderDash: [6, 5], borderWidth: 2, pointRadius: 0 },
         { data: [...Array(nH - 1).fill(null), +nowV.toFixed(2), ...proj.map(p => +p.opt.toFixed(2))], borderColor: 'transparent', pointRadius: 0 },
         { data: [...Array(nH - 1).fill(null), +nowV.toFixed(2), ...proj.map(p => +p.con.toFixed(2))], borderColor: 'transparent', backgroundColor: bandColorG, fill: '-1', pointRadius: 0 },
@@ -482,10 +494,11 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       const last = ex.pts[ex.pts.length - 1];
       const sim = simulate(last.w, last.reps[0] || 6, b.inc, freq[ex.day] || 0.7);
       const nH = ex.pts.length;
+      const liftY = ex.pts.map(p => p.w);
       charts.push(new Chart($('#pl' + i), {
         type: 'line',
         data: { labels: [...ex.pts.map(p => p.date.slice(5).replace('-', '/')), ...sim.mid.map(p => p.l)], datasets: [
-          { data: [...ex.pts.map(p => p.w), ...Array(sim.mid.length).fill(null)], borderColor: C.lift, borderWidth: 2, pointRadius: 2.5, tension: 0.2 },
+          { data: [...liftY, ...Array(sim.mid.length).fill(null)], borderColor: trendColor(liftY, false), borderWidth: 2, pointRadius: 2.5, tension: 0.2 },
           { data: [...Array(nH - 1).fill(null), last.w, ...sim.mid.map(p => p.w)], borderColor: C.lift, borderDash: [5, 4], borderWidth: 2, pointRadius: 0, stepped: true },
           { data: [...Array(nH - 1).fill(null), last.w, ...sim.opt.map(p => p.w)], borderColor: 'transparent', pointRadius: 0, stepped: true },
           { data: [...Array(nH - 1).fill(null), last.w, ...sim.con.map(p => p.w)], borderColor: 'transparent', backgroundColor: bandColorG, fill: '-1', pointRadius: 0, stepped: true },

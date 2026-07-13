@@ -456,16 +456,28 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       pointRadius: 2.5, pointHoverRadius: 6, pointHitRadius: 14, tension: 0.3,
     };
   }
+  // Color a line by its own trend: green if it ends higher on screen than it
+  // started, red if lower. `reversed` accounts for inverted-axis charts
+  // (e.g. pace, where a lower number plots higher) so the color always
+  // matches what the line visually does, not just the raw numbers.
+  function trendColor(values, reversed) {
+    const clean = values.filter(v => v !== null && v !== undefined && !isNaN(v));
+    if (clean.length < 2 || clean[0] === clean[clean.length - 1]) return C.muted;
+    const first = clean[0], last = clean[clean.length - 1];
+    const risesOnScreen = reversed ? last < first : last > first;
+    return risesOnScreen ? C.lift : C.hr;
+  }
 
   function buildCharts() {
     destroyCharts();
     const rs = runs.filter(inRange);
     const hrRuns = rs.filter(r => r.avg_hr);
 
+    const hrData = hrRuns.map(r => Math.round(r.avg_hr));
     charts.push(new Chart($('#hrChart'), {
       type: 'line',
       data: { labels: hrRuns.map(r => fmtDate(r.date)),
-        datasets: [{ ...baseLine(C.hr), data: hrRuns.map(r => Math.round(r.avg_hr)) }] },
+        datasets: [{ ...baseLine(trendColor(hrData, false)), data: hrData }] },
       options: { maintainAspectRatio: false,
         scales: { y: { title: { display: false }, grace: '10%' }, x: { ticks: { maxTicksLimit: 8 } } },
         plugins: { tooltip: { callbacks: {
@@ -501,10 +513,11 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
       return `<span><i style="background:${color}"></i>Z${i + 1} ${range}</span>`;
     }).join('');
 
+    const paceData = rs.map(r => +paceOf(r).toFixed(2));
     charts.push(new Chart($('#paceChart'), {
       type: 'line',
       data: { labels: rs.map(r => fmtDate(r.date)),
-        datasets: [{ ...baseLine(C.run), data: rs.map(r => +paceOf(r).toFixed(2)) }] },
+        datasets: [{ ...baseLine(trendColor(paceData, true)), data: paceData }] },
       options: { maintainAspectRatio: false,
         scales: { y: { reverse: true, ticks: { callback: (v) => fmtPace(v) } }, x: { ticks: { maxTicksLimit: 8 } } },
         plugins: { tooltip: { callbacks: {
@@ -556,10 +569,11 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
     }).join('');
     names.forEach((n, i) => {
       const ex = byEx[n];
+      const exData = ex.pts.map(p => p.w);
       exCharts.push(new Chart($('#ex' + i), {
         type: 'line',
         data: { labels: ex.pts.map(p => fmtDate(p.date)),
-          datasets: [{ ...baseLine(C.lift), data: ex.pts.map(p => p.w), pointRadius: 3 }] },
+          datasets: [{ ...baseLine(trendColor(exData, false)), data: exData, pointRadius: 3 }] },
         options: { maintainAspectRatio: false,
           scales: { y: { grace: '15%', ticks: { maxTicksLimit: 4, font: { size: 10 } } },
                     x: { ticks: { maxTicksLimit: 4, font: { size: 10 } } } },
