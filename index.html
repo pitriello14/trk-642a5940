@@ -262,8 +262,8 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
         <div class="chart-wrap"><canvas id="hrChart" role="img" aria-label="Line chart of average heart rate per run over time"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="chart-title">Weekly time in HR zones (minutes)</div>
-        <div class="chart-wrap"><canvas id="zoneChart" role="img" aria-label="Stacked bar chart of weekly minutes spent in each heart-rate zone"></canvas></div>
+        <div class="chart-title">Weekly running time in HR zones (minutes)</div>
+        <div class="chart-wrap"><canvas id="zoneChart" role="img" aria-label="Stacked bar chart of weekly running minutes spent in each heart-rate zone"></canvas></div>
         <div class="zone-legend" id="zoneLegend"></div>
       </div>
     </div>
@@ -497,8 +497,9 @@ footer { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: cen
         } } } },
     }));
 
-    // weekly zone minutes (runs + lift sessions with zones)
-    const withZones = all.filter(w => inRange(w) && w.hr_zone_seconds);
+    // weekly zone minutes -- running only; strength-training HR isn't a
+    // meaningful cardio effort zone, so it's excluded here entirely.
+    const withZones = all.filter(w => inRange(w) && w.hr_zone_seconds && w.strava_type === 'Run');
     const zWeeks = {};
     withZones.forEach(w => {
       const k = weekKey(w.date);
