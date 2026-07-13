@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-12T10:53:50+00:00",
+ "generated_at": "2026-07-13T12:21:46+00:00",
  "hr_zones": [
   [
    0,
@@ -2494,29 +2494,6 @@
       7,
       7
      ]
-    },
-    {
-     "exercise": "Narrow pull down",
-     "weight": 81.0,
-     "unit": "kg",
-     "weight_kg": 81.0,
-     "reps": [
-      7,
-      6,
-      6
-     ]
-    },
-    {
-     "exercise": "Chest fly",
-     "weight": 64.0,
-     "unit": "kg",
-     "weight_kg": 64.0,
-     "reps": [
-      6,
-      6,
-      6,
-      6
-     ]
     }
    ],
    "avg_hr": 84.3,
@@ -2655,9 +2632,9 @@
     },
     {
      "exercise": "Single arm tricep",
-     "weight": 18.0,
+     "weight": 8.5,
      "unit": "kg",
-     "weight_kg": 18.0,
+     "weight_kg": 8.5,
      "reps": [
       7,
       7,
@@ -2667,9 +2644,9 @@
     },
     {
      "exercise": "Pulley bicep",
-     "weight": 41.0,
+     "weight": 20.0,
      "unit": "kg",
-     "weight_kg": 41.0,
+     "weight_kg": 20.0,
      "reps": [
       7,
       7,
@@ -2678,9 +2655,9 @@
     },
     {
      "exercise": "Cable front delt 1 arm",
-     "weight": 16.0,
+     "weight": 7.0,
      "unit": "kg",
-     "weight_kg": 16.0,
+     "weight_kg": 7.0,
      "reps": [
       7,
       7,
@@ -2708,17 +2685,6 @@
       5,
       5,
       5
-     ]
-    },
-    {
-     "exercise": "Upper chest fly",
-     "weight": 18.0,
-     "unit": "kg",
-     "weight_kg": 18.0,
-     "reps": [
-      6,
-      6,
-      6
      ]
     }
    ],
@@ -2817,29 +2783,6 @@
       7,
       7
      ]
-    },
-    {
-     "exercise": "Narrow pull down",
-     "weight": 81.0,
-     "unit": "kg",
-     "weight_kg": 81.0,
-     "reps": [
-      7,
-      7,
-      6
-     ]
-    },
-    {
-     "exercise": "Chest fly",
-     "weight": 64.0,
-     "unit": "kg",
-     "weight_kg": 64.0,
-     "reps": [
-      7,
-      7,
-      6,
-      6
-     ]
     }
    ],
    "avg_hr": 90.6,
@@ -2930,9 +2873,9 @@
     },
     {
      "exercise": "Single arm tricep",
-     "weight": 18.0,
+     "weight": 8.5,
      "unit": "kg",
-     "weight_kg": 18.0,
+     "weight_kg": 8.5,
      "reps": [
       10,
       10,
@@ -2942,9 +2885,9 @@
     },
     {
      "exercise": "Pulley bicep",
-     "weight": 46.0,
+     "weight": 20.0,
      "unit": "kg",
-     "weight_kg": 46.0,
+     "weight_kg": 20.0,
      "reps": [
       8,
       8,
@@ -2953,9 +2896,9 @@
     },
     {
      "exercise": "Cable front delt 1 arm",
-     "weight": 14.0,
+     "weight": 7.0,
      "unit": "kg",
-     "weight_kg": 14.0,
+     "weight_kg": 7.0,
      "reps": [
       8,
       8,
@@ -2981,17 +2924,6 @@
      "reps": [
       7,
       6,
-      6
-     ]
-    },
-    {
-     "exercise": "Upper chest fly",
-     "weight": 22.0,
-     "unit": "kg",
-     "weight_kg": 22.0,
-     "reps": [
-      8,
-      8,
       6
      ]
     }
@@ -3089,28 +3021,6 @@
       7,
       7,
       7
-     ]
-    },
-    {
-     "exercise": "Narrow pull down",
-     "weight": 88.0,
-     "unit": "kg",
-     "weight_kg": 88.0,
-     "reps": [
-      7,
-      5,
-      5
-     ]
-    },
-    {
-     "exercise": "Chest fly",
-     "weight": 69.0,
-     "unit": "kg",
-     "weight_kg": 69.0,
-     "reps": [
-      7,
-      6,
-      6
      ]
     }
    ],
@@ -3447,6 +3357,94 @@
     0
    ],
    "strava_type": "Run"
+  },
+  {
+   "type": "lift",
+   "date": "2026-12-06",
+   "day": "Upper B",
+   "exercises": [
+    {
+     "exercise": "Preacher curl",
+     "weight": 22.5,
+     "unit": "kg",
+     "weight_kg": 22.5,
+     "reps": [
+      8,
+      7,
+      6
+     ]
+    },
+    {
+     "exercise": "Single arm tricep",
+     "weight": 10.0,
+     "unit": "kg",
+     "weight_kg": 10.0,
+     "reps": [
+      8,
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Pulley bicep",
+     "weight": 22.5,
+     "unit": "kg",
+     "weight_kg": 22.5,
+     "reps": [
+      10,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Cable front delt 1 arm",
+     "weight": 7.5,
+     "unit": "kg",
+     "weight_kg": 7.5,
+     "reps": [
+      8,
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Pull ups",
+     "weight": 20.0,
+     "unit": "kg",
+     "weight_kg": 20.0,
+     "reps": [
+      4,
+      4,
+      3
+     ]
+    },
+    {
+     "exercise": "Dips",
+     "weight": 15.0,
+     "unit": "kg",
+     "weight_kg": 15.0,
+     "reps": [
+      8,
+      77
+     ]
+    },
+    {
+     "exercise": "chest fly",
+     "weight": 59.0,
+     "unit": "kg",
+     "weight_kg": 59.0,
+     "reps": [
+      8,
+      8
+     ]
+    }
+   ],
+   "avg_hr": null,
+   "max_hr": null,
+   "duration_s": null,
+   "hr_zone_seconds": null
   }
  ]
 }
