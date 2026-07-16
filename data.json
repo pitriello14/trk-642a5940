@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-15T09:30:26+00:00",
+ "generated_at": "2026-07-16T09:36:54+00:00",
  "hr_zones": [
   [
    0,
@@ -2483,17 +2483,6 @@
       8,
       8
      ]
-    },
-    {
-     "exercise": "Upper back rows",
-     "weight": 82.0,
-     "unit": "kg",
-     "weight_kg": 82.0,
-     "reps": [
-      7,
-      7,
-      7
-     ]
     }
    ],
    "avg_hr": 84.3,
@@ -2772,17 +2761,6 @@
       8,
       7
      ]
-    },
-    {
-     "exercise": "Upper back rows",
-     "weight": 82.0,
-     "unit": "kg",
-     "weight_kg": 82.0,
-     "reps": [
-      7,
-      7,
-      7
-     ]
     }
    ],
    "avg_hr": 90.6,
@@ -2980,9 +2958,9 @@
     },
     {
      "exercise": "Single arm bicep",
-     "weight": 25.0,
+     "weight": 10.5,
      "unit": "kg",
-     "weight_kg": 25.0,
+     "weight_kg": 10.5,
      "reps": [
       5,
       5,
@@ -3010,17 +2988,6 @@
       6,
       6,
       6
-     ]
-    },
-    {
-     "exercise": "Upper back rows",
-     "weight": 60.0,
-     "unit": "kg",
-     "weight_kg": 60.0,
-     "reps": [
-      7,
-      7,
-      7
      ]
     }
    ],
@@ -3359,8 +3326,160 @@
    "strava_type": "Run"
   },
   {
+   "strava_id": 19323546572,
+   "date": "2026-07-10",
+   "start_local": "2026-07-10T07:08:25Z",
+   "type": "cardio",
+   "name": "Morning Run",
+   "duration_s": 1162,
+   "elapsed_s": 1170,
+   "distance_m": 3011.7,
+   "elevation_m": 2.7,
+   "avg_hr": 146.4,
+   "max_hr": 156.0,
+   "avg_speed_ms": 2.592,
+   "hr_zone_seconds": [
+    65,
+    1105,
+    0,
+    0,
+    0
+   ],
+   "strava_type": "Run"
+  },
+  {
+   "strava_id": 19323546564,
+   "date": "2026-07-12",
+   "start_local": "2026-07-12T14:52:53Z",
+   "type": "lift_hr_only",
+   "name": "Afternoon Weight Training",
+   "duration_s": 5601,
+   "elapsed_s": 5601,
+   "distance_m": 0.0,
+   "elevation_m": 0,
+   "avg_hr": 93.5,
+   "max_hr": 122.0,
+   "avg_speed_ms": 0.0,
+   "hr_zone_seconds": [
+    5536,
+    0,
+    0,
+    0,
+    0
+   ],
+   "strava_type": "WeightTraining"
+  },
+  {
+   "strava_id": 19323547636,
+   "date": "2026-07-14",
+   "start_local": "2026-07-14T19:15:34Z",
+   "type": "cardio",
+   "name": "Evening Run",
+   "duration_s": 2648,
+   "elapsed_s": 2648,
+   "distance_m": 7320.0,
+   "elevation_m": 0,
+   "avg_hr": 139.2,
+   "max_hr": 158.0,
+   "avg_speed_ms": 2.764,
+   "hr_zone_seconds": [
+    509,
+    2139,
+    0,
+    0,
+    0
+   ],
+   "strava_type": "Run"
+  },
+  {
    "type": "lift",
-   "date": "2026-12-06",
+   "date": "2026-07-15",
+   "day": "Upper A",
+   "exercises": [
+    {
+     "exercise": "Tricep pull down",
+     "weight": 22.5,
+     "unit": "kg",
+     "weight_kg": 22.5,
+     "reps": [
+      7,
+      7,
+      7
+     ]
+    },
+    {
+     "exercise": "Overhead tricep",
+     "weight": 15.0,
+     "unit": "kg",
+     "weight_kg": 15.0,
+     "reps": [
+      6,
+      6,
+      6
+     ]
+    },
+    {
+     "exercise": "Lateral delt 1 arm",
+     "weight": 7.5,
+     "unit": "kg",
+     "weight_kg": 7.5,
+     "reps": [
+      8,
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Lat pull down",
+     "weight": 75.0,
+     "unit": "kg",
+     "weight_kg": 75.0,
+     "reps": [
+      8,
+      8,
+      7
+     ]
+    },
+    {
+     "exercise": "Upper chest machine",
+     "weight": 50.0,
+     "unit": "kg",
+     "weight_kg": 50.0,
+     "reps": [
+      8,
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Upper back rows",
+     "weight": 45.0,
+     "unit": "kg",
+     "weight_kg": 45.0,
+     "reps": [
+      8,
+      6,
+      6
+     ]
+    }
+   ],
+   "avg_hr": 85.0,
+   "max_hr": 131.0,
+   "duration_s": 5569,
+   "hr_zone_seconds": [
+    5567,
+    2,
+    0,
+    0,
+    0
+   ],
+   "strava_id": 19324565729
+  },
+  {
+   "type": "lift",
+   "date": "2026-12-07",
    "day": "Upper B",
    "exercises": [
     {
