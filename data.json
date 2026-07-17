@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-16T09:36:54+00:00",
+ "generated_at": "2026-07-17T09:26:57+00:00",
  "hr_zones": [
   [
    0,
@@ -3476,6 +3476,28 @@
     0
    ],
    "strava_id": 19324565729
+  },
+  {
+   "strava_id": 19338845239,
+   "date": "2026-07-16",
+   "start_local": "2026-07-16T18:42:20Z",
+   "type": "cardio",
+   "name": "Evening Run",
+   "duration_s": 2969,
+   "elapsed_s": 2969,
+   "distance_m": 8150.0,
+   "elevation_m": 0,
+   "avg_hr": 149.3,
+   "max_hr": 166.0,
+   "avg_speed_ms": 2.745,
+   "hr_zone_seconds": [
+    263,
+    2566,
+    140,
+    0,
+    0
+   ],
+   "strava_type": "Run"
   },
   {
    "type": "lift",
