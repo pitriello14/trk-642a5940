@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-18T08:27:06+00:00",
+ "generated_at": "2026-07-19T09:26:34+00:00",
  "hr_zones": [
   [
    0,
@@ -3494,6 +3494,28 @@
     263,
     2566,
     140,
+    0,
+    0
+   ],
+   "strava_type": "Run"
+  },
+  {
+   "strava_id": 19367239193,
+   "date": "2026-07-18",
+   "start_local": "2026-07-18T21:26:20Z",
+   "type": "cardio",
+   "name": "Night Run",
+   "duration_s": 1968,
+   "elapsed_s": 1968,
+   "distance_m": 5002.1,
+   "elevation_m": 36.8,
+   "avg_hr": 147.2,
+   "max_hr": 162.0,
+   "avg_speed_ms": 2.542,
+   "hr_zone_seconds": [
+    46,
+    1922,
+    0,
     0,
     0
    ],
