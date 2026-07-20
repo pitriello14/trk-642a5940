@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-19T09:26:34+00:00",
+ "generated_at": "2026-07-20T12:00:15+00:00",
  "hr_zones": [
   [
    0,
@@ -2643,18 +2643,6 @@
      ]
     },
     {
-     "exercise": "Cable front delt 1 arm",
-     "weight": 7.0,
-     "unit": "kg",
-     "weight_kg": 7.0,
-     "reps": [
-      7,
-      7,
-      7,
-      7
-     ]
-    },
-    {
      "exercise": "Pull ups",
      "weight": 20.0,
      "unit": "kg",
@@ -2866,17 +2854,6 @@
      "weight": 20.0,
      "unit": "kg",
      "weight_kg": 20.0,
-     "reps": [
-      8,
-      8,
-      8
-     ]
-    },
-    {
-     "exercise": "Cable front delt 1 arm",
-     "weight": 7.0,
-     "unit": "kg",
-     "weight_kg": 7.0,
      "reps": [
       8,
       8,
@@ -3523,6 +3500,99 @@
   },
   {
    "type": "lift",
+   "date": "2026-07-19",
+   "day": "Upper B",
+   "exercises": [
+    {
+     "exercise": "Preacher curl",
+     "weight": 24.5,
+     "unit": "kg",
+     "weight_kg": 24.5,
+     "reps": [
+      6,
+      6,
+      6
+     ]
+    },
+    {
+     "exercise": "Single arm tricep",
+     "weight": 12.5,
+     "unit": "kg",
+     "weight_kg": 12.5,
+     "reps": [
+      6,
+      6,
+      6,
+      6
+     ]
+    },
+    {
+     "exercise": "Pulley bicep",
+     "weight": 25.0,
+     "unit": "kg",
+     "weight_kg": 25.0,
+     "reps": [
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Shoulder press machine",
+     "weight": 50.0,
+     "unit": "kg",
+     "weight_kg": 50.0,
+     "reps": [
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Pull ups",
+     "weight": 16.25,
+     "unit": "kg",
+     "weight_kg": 16.25,
+     "reps": [
+      5,
+      5,
+      5
+     ]
+    },
+    {
+     "exercise": "Dips",
+     "weight": 16.25,
+     "unit": "kg",
+     "weight_kg": 16.25,
+     "reps": [
+      7,
+      7,
+      7
+     ]
+    },
+    {
+     "exercise": "chest fly",
+     "weight": 64.0,
+     "unit": "kg",
+     "weight_kg": 64.0,
+     "reps": [
+      8
+     ]
+    }
+   ],
+   "avg_hr": 84.0,
+   "max_hr": 125.0,
+   "duration_s": 5964,
+   "hr_zone_seconds": [
+    5964,
+    0,
+    0,
+    0,
+    0
+   ],
+   "strava_id": 19378357974
+  },
+  {
+   "type": "lift",
    "date": "2026-12-07",
    "day": "Upper B",
    "exercises": [
@@ -3561,18 +3631,6 @@
      ]
     },
     {
-     "exercise": "Cable front delt 1 arm",
-     "weight": 7.5,
-     "unit": "kg",
-     "weight_kg": 7.5,
-     "reps": [
-      8,
-      8,
-      8,
-      8
-     ]
-    },
-    {
      "exercise": "Pull ups",
      "weight": 20.0,
      "unit": "kg",
@@ -3590,7 +3648,8 @@
      "weight_kg": 15.0,
      "reps": [
       8,
-      77
+      7,
+      7
      ]
     },
     {
@@ -3599,6 +3658,7 @@
      "unit": "kg",
      "weight_kg": 59.0,
      "reps": [
+      8,
       8,
       8
      ]
