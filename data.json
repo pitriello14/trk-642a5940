@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-20T12:00:15+00:00",
+ "generated_at": "2026-07-22T10:35:41+00:00",
  "hr_zones": [
   [
    0,
@@ -3590,6 +3590,123 @@
     0
    ],
    "strava_id": 19378357974
+  },
+  {
+   "strava_id": 19391619646,
+   "date": "2026-07-20",
+   "start_local": "2026-07-20T18:57:46Z",
+   "type": "cardio",
+   "name": "Evening Run",
+   "duration_s": 2644,
+   "elapsed_s": 4903,
+   "distance_m": 4810.2,
+   "elevation_m": 12.7,
+   "avg_hr": 127.1,
+   "max_hr": 176.0,
+   "avg_speed_ms": 1.819,
+   "hr_zone_seconds": [
+    2808,
+    1792,
+    114,
+    0,
+    0
+   ],
+   "strava_type": "Run"
+  },
+  {
+   "type": "lift",
+   "date": "2026-07-21",
+   "day": "Upper A",
+   "exercises": [
+    {
+     "exercise": "Tricep pull down",
+     "weight": 22.5,
+     "unit": "kg",
+     "weight_kg": 22.5,
+     "reps": [
+      8,
+      8,
+      9
+     ]
+    },
+    {
+     "exercise": "Single arm bicep",
+     "weight": 12.5,
+     "unit": "kg",
+     "weight_kg": 12.5,
+     "reps": [
+      8,
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Overhead tricep",
+     "weight": 15.0,
+     "unit": "kg",
+     "weight_kg": 15.0,
+     "reps": [
+      8,
+      8,
+      8
+     ]
+    },
+    {
+     "exercise": "Lateral delt 1 arm",
+     "weight": 7.5,
+     "unit": "kg",
+     "weight_kg": 7.5,
+     "reps": [
+      8,
+      8,
+      8,
+      9
+     ]
+    },
+    {
+     "exercise": "Lat pull down",
+     "weight": 80.0,
+     "unit": "kg",
+     "weight_kg": 80.0,
+     "reps": [
+      6,
+      6,
+      6
+     ]
+    },
+    {
+     "exercise": "Upper chest machine",
+     "weight": 60.0,
+     "unit": "kg",
+     "weight_kg": 60.0,
+     "reps": [
+      6,
+      6,
+      6
+     ]
+    },
+    {
+     "exercise": "Upper back rows",
+     "weight": 45.0,
+     "unit": "kg",
+     "weight_kg": 45.0,
+     "reps": [
+      8
+     ]
+    }
+   ],
+   "avg_hr": 91.5,
+   "max_hr": 136.0,
+   "duration_s": 5221,
+   "hr_zone_seconds": [
+    5201,
+    20,
+    0,
+    0,
+    0
+   ],
+   "strava_id": 19405696392
   },
   {
    "type": "lift",
