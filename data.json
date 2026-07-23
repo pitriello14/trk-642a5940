@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-22T10:35:41+00:00",
+ "generated_at": "2026-07-23T10:36:12+00:00",
  "hr_zones": [
   [
    0,
@@ -3692,6 +3692,8 @@
      "unit": "kg",
      "weight_kg": 45.0,
      "reps": [
+      8,
+      8,
       8
      ]
     }
@@ -3707,6 +3709,28 @@
     0
    ],
    "strava_id": 19405696392
+  },
+  {
+   "strava_id": 19417588552,
+   "date": "2026-07-22",
+   "start_local": "2026-07-22T15:39:50Z",
+   "type": "cardio",
+   "name": "Afternoon Run",
+   "duration_s": 1794,
+   "elapsed_s": 1794,
+   "distance_m": 4965.7,
+   "elevation_m": 0,
+   "avg_hr": 139.0,
+   "max_hr": 159.0,
+   "avg_speed_ms": 2.768,
+   "hr_zone_seconds": [
+    279,
+    1515,
+    0,
+    0,
+    0
+   ],
+   "strava_type": "Run"
   },
   {
    "type": "lift",
